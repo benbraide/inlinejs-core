@@ -1,0 +1,2 @@
+export declare const ProxyMagicHandler: import("@benbraide/inlinejs").IMagicHandlerCallbackDetails;
+export declare function ProxyMagicHandlerCompact(): void;
