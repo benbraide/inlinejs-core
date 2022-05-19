@@ -1,8 +1,8 @@
 # InlineJS Core Package
 
-[![npm (scoped)](https://img.shields.io/npm/v/@benbraide/inlinejs-core.svg)](https://www.npmjs.com/package/@benbraide/inlinejs) [![npm bundle size (minified)](https://img.shields.io/bundlephobia/min/@benbraide/inlinejs-core.svg)](https://www.npmjs.com/package/@benbraide/inlinejs)
+[![npm (scoped)](https://img.shields.io/npm/v/@benbraide/inlinejs-core.svg)](https://www.npmjs.com/package/@benbraide/inlinejs-core) [![npm bundle size (minified)](https://img.shields.io/bundlephobia/minzip/@benbraide/inlinejs-core.svg)](https://www.npmjs.com/package/@benbraide/inlinejs-core)
 
-This package contains `core` directives and magic properties for the [InlineJS Framework](https://github.com/alpinejs/alpine)
+This package contains `core` directives and magic properties for the [InlineJS Framework](https://github.com/benbraide/InlineJS)
 
 ## Install
 
