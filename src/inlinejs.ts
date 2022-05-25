@@ -1,4 +1,4 @@
-import { GetGlobal, GetOrCreateGlobal, BootstrapAndAttach, AttributeInterpolator, TextContentInterpolator } from '@benbraide/inlinejs';
+import { GetGlobal, AutoBootstrap, AttributeInterpolator, TextContentInterpolator } from '@benbraide/inlinejs';
 
 import { DataDirectiveHandlerCompact } from './directive/data/data';
 import { ComponentDirectiveHandlerCompact } from './directive/data/component';
@@ -51,18 +51,7 @@ import { ClassMagicHandlerCompact } from './magic/class';
 import { EvaluateMagicHandlerCompact } from './magic/evaluate';
 import { DomMagicHandlerCompact } from './magic/dom';
 
-GetOrCreateGlobal();
-
-queueMicrotask(() => {//Bootstrap
-    if (document.readyState == "loading"){
-        document.addEventListener('DOMContentLoaded', () => {
-            BootstrapAndAttach();
-        });
-    }
-    else{//Loaded
-        BootstrapAndAttach();
-    }
-});
+AutoBootstrap();
 
 GetGlobal().AddAttributeProcessor(AttributeInterpolator);
 GetGlobal().AddTextContentProcessor(TextContentInterpolator);

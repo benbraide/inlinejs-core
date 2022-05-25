@@ -12,6 +12,7 @@ export const HtmlDirectiveHandler = CreateDirectiveHandlerCallback('html', ({ co
                         html: value,
                         component: componentId,
                         processDirectives: true,
+                        afterTransitionCallback: () => {},
                     });
                 }
             });

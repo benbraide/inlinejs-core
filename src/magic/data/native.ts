@@ -1,6 +1,6 @@
 import { AddMagicHandler, CreateMagicHandlerCallback, GetTarget } from "@benbraide/inlinejs";
 
-export const NativeMagicHandler = CreateMagicHandlerCallback('ancestor', () => GetTarget);
+export const NativeMagicHandler = CreateMagicHandlerCallback('native', () => GetTarget);
 
 export function NativeMagicHandlerCompact(){
     AddMagicHandler(NativeMagicHandler);

@@ -318,6 +318,8 @@ Boolean attributes are supported as per the [HTML specification](https://html.sp
 >
 > Dynamically rendering HTML from third parties can easily lead to [XSS](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting) vulnerabilities.
 
+> :loudspeaker: This directive supports `transitions` and `animations`.
+
 ---
 
 ### `x-on`
@@ -352,7 +354,7 @@ Examples: `enter`, `escape`, `arrow-up`, `arrow-down`
 > Note: You can also listen for system-modifier key combinations like: `x-on:keydown.ctrl.enter="foo"`
 > Multiple keys can be combined for alternatives e.g. `x-on:keydown.enter.space`
 > Character ranges can be specified e.g. `x-on:keydown.a-z` `x-on:keydown.0-9`
-> Character groups can be specified e.g. `x-on:keydown.alpha` `x-on:keydown.digits`
+> Character groups can be specified e.g. `x-on:keydown.alpha` `x-on:keydown.digit`
 
 **`.outside` modifier**
 
@@ -451,6 +453,8 @@ For cases where `x-show` isn't sufficient (`x-show` sets an element to `display:
 > - A `template` element is required for this directive.
 > - The template element must have a single direct child.
 
+> :loudspeaker: This directive supports `transitions` and `animations`.
+
 ---
 
 ### `x-else`
@@ -468,6 +472,8 @@ The `x-else` directive enables an `if-then-else` paradigm. A `x-if` or `x-else` 
 >**Note**:
 > - A `template` element is required for this directive.
 > - The template element must have a single direct child.
+
+> :loudspeaker: This directive supports `transitions` and `animations`.
 
 ---
 
@@ -545,6 +551,8 @@ Negative values can be specified. Example:
 
 > By default, the iteration range is from to `value + 1` to `0`.
 
+> :loudspeaker: This directive supports `transitions` and `animations`.
+
 ---
 
 ### `x-show`
@@ -553,6 +561,8 @@ Negative values can be specified. Example:
 **Structure:** `<div x-show="[expression]"></div>`
 
 `x-show` toggles the `display: none;` style on the element depending if the expression resolves to `true` or `false`.
+
+> :loudspeaker: This directive supports `transitions` and `animations`.
 
 ---
 
@@ -566,3 +576,16 @@ Negative values can be specified. Example:
     [x-cloak] { display: none; }
 </style>
 ```
+
+## Security
+If you find a security vulnerability, please send an email to [benplaeska@gmail.com]()
+
+`InlineJS` relies on a custom implementation using the `Function` object to evaluate its directives. Despite being more secure then `eval()`, its use is prohibited in some environments, such as Google Chrome App, using restrictive Content Security Policy (CSP).
+
+If you use `InlineJS` in a website dealing with sensitive data and requiring [CSP](https://csp.withgoogle.com/docs/strict-csp.html), you need to include `unsafe-eval` in your policy. A robust policy correctly configured will help protecting your users when using personal or financial data.
+
+Since a policy applies to all scripts in your page, it's important that other external libraries included in the website are carefully reviewed to ensure that they are trustworthy and they won't introduce any Cross Site Scripting vulnerability either using the `eval()` function or manipulating the DOM to inject malicious code in your page.
+
+## License
+
+Licensed under the MIT license, see [LICENSE.md](LICENSE.md) for details.

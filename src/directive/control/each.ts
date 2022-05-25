@@ -240,8 +240,10 @@ export const EachDirectiveHandler = CreateDirectiveHandlerCallback('each', ({ co
     (component || FindComponentById(componentId))?.FindElementScope(contextElement)?.AddUninitCallback(() => generateArrayItems([]));
 
     let firstEntry = true;
-    init.effect((value) => {//Prevent adding 'get access' entries
-        let checkpoint = ++init!.checkpoint, component = (firstEntry ? FindComponentById(componentId) : null); component?.GetBackend().changes.PushGetAccessStorageSnapshot();
+    init.effect((value) => {
+        let checkpoint = ++init!.checkpoint, component = (firstEntry ? FindComponentById(componentId) : null);
+        
+        component?.GetBackend().changes.PushGetAccessStorageSnapshot();//Prevent adding 'get access' entries
         StreamData(value, (value) => {
             if (checkpoint != init?.checkpoint){
                 return;
