@@ -1,4 +1,4 @@
-import { AddDirectiveHandler, CreateDirectiveHandlerCallback, GetGlobal, ToString, ResolveKeyValue } from "@benbraide/inlinejs";
+import { AddDirectiveHandler, CreateDirectiveHandlerCallback, GetGlobal, ToString, ResolveKeyValue, ClassDirectiveExpansionRule } from "@benbraide/inlinejs";
 
 export const ClassDirectiveHandler = CreateDirectiveHandlerCallback('class', ({ componentId, contextElement, expression, argKey }) => {
     let split = (key: string) => key.split(' ').filter(item => !!item), previousList: Array<string> | null = null;
@@ -15,10 +15,6 @@ export const ClassDirectiveHandler = CreateDirectiveHandlerCallback('class', ({ 
         },
     });
 });
-
-export function ClassDirectiveExpansionRule(name: string){
-    return (name.startsWith('.') ? name.replace('.', GetGlobal().GetConfig().GetDirectiveName('class:')) : null);
-}
 
 export function ClassDirectiveHandlerCompact(){
     AddDirectiveHandler(ClassDirectiveHandler);

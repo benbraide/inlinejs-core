@@ -1,7 +1,7 @@
 const path = require('path');
 module.exports = {
    entry: {
-       "inlinejs": "./src/inlinejs.ts",
+       "inlinejs-core": "./src/inlinejs-core.ts",
    },
    output: {
        filename: "[name].js",

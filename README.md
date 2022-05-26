@@ -12,8 +12,8 @@ This package contains `core` directives and magic properties for the [InlineJS F
 ## CDNs
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@benbraide/inlinejs-core@1.x.x/dist/inlinejs.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@benbraide/inlinejs-core@1.x.x/dist/inlinejs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@benbraide/inlinejs-core@1.x.x/dist/inlinejs-core.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@benbraide/inlinejs-core@1.x.x/dist/inlinejs-core.min.js"></script>
 ```
  
 ## NPM Install
@@ -177,27 +177,27 @@ Use the `evaluate` argument to instruct the directive to evaluate the specified 
 
 ### `x-locals`
 
-**Example:** `<div x-data x-locals="{ foo: 'bar' }">...</div>`
+**Example:** `<div x-locals="{ foo: 'bar' }">...</div>`
 
 **Structure:** `<div x-locals="[object literal]|[Function]">...</div>`
 
-`x-data` declares a new component scope. It tells the framework to initialize a new component with the following data object.
+`x-locals` declares a new component scope. It tells the framework to initialize a new component with the following data object.
 
 ---
 
 ### `x-post`
-**Example:** `<div x-data x-post="console.log('Every offspring initialized')"></div>`
+**Example:** `<div x-post="console.log('Every offspring initialized')"></div>`
 
-**Structure:** `<div x-data="..." x-post="[expression]"></div>`
+**Structure:** `<div x-post="[expression]"></div>`
 
 `x-post` runs an expression after all directives on element, and offspring directives, have been executed.
 
 ---
 
 ### `x-uninit`
-**Example:** `<div x-data="{ foo: 'bar' }" x-uninit="console.log('Element removed')"></div>`
+**Example:** `<div x-uninit="console.log('Element removed')"></div>`
 
-**Structure:** `<div x-data="..." x-uninit="[expression]"></div>`
+**Structure:** `<div x-uninit="[expression]"></div>`
 
 `x-uninit` runs an expression when an element is removed from the DOM.
 
@@ -206,7 +206,7 @@ Use the `evaluate` argument to instruct the directive to evaluate the specified 
 ### `x-static`
 **Example:** `<div x-data="{ foo: 'bar' }" x-static="foo = 'baz'"></div>`
 
-**Structure:** `<div x-data="..." x-static="[expression]"></div>`
+**Structure:** `<div x-static="[expression]"></div>`
 
 `x-static` runs an expression without keeping track of changes.
 
@@ -215,7 +215,7 @@ Use the `evaluate` argument to instruct the directive to evaluate the specified 
 ### `x-effect`
 **Example:** `<div x-data="{ value: 9 }" x-effect="doubled = value * 2"></div>`
 
-**Structure:** `<div x-data="..." x-effect="[expression]"></div>`
+**Structure:** `<div x-effect="[expression]"></div>`
 
 `x-effect` runs an expression and keeps track of changes. When changes occur elsewhere, the expression is re-run.
 
@@ -259,13 +259,13 @@ Boolean attributes are supported as per the [HTML specification](https://html.sp
 
 ### `x-style`
 **Example:**
-```
+```html
 <span x-style:display="'block'"></span>
 <span x-style="{ display: 'block', width: '1rem' }"></span>
 ```
 
 **Structure:**
-```
+```html
 <span x-style:[property]="[expression]"></span>
 <span x-style="{ [property]: [expression], ... }"></span>
 ```
@@ -279,13 +279,13 @@ Boolean attributes are supported as per the [HTML specification](https://html.sp
 > Note: You are free to use the shorter "." syntax: `.block="..."`
 
 **Example:**
-```
+```html
 <span x-class:block="shouldBeBlock"></span>
 <span x-class="{ block: true, inline: false }"></span>
 ```
 
 **Structure:**
-```
+```html
 <span x-class:[name]="[boolean expression]"></span>
 <span x-class="{ [name]: [boolean expression], ... }"></span>
 ```
@@ -405,7 +405,7 @@ The default debounce "wait" time is 250 milliseconds.
 
 If you wish to customize this, you can specify a custom wait time like so:
 
-```
+```html
 <input x-on:input.debounce.750="fetchSomething()">
 <input x-on:input.debounce.750ms="fetchSomething()">
 ```
@@ -435,7 +435,7 @@ The default debounce "wait" time is 250 milliseconds.
 
 If you wish to customize this, you can specify a custom wait time like so:
 
-```
+```html
 <input x-model.debounce.750="search">
 <input x-model.debounce.750ms="search">
 ```

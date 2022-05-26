@@ -1,4 +1,14 @@
-import { AddDirectiveHandler, CreateDirectiveHandlerCallback, GetGlobal, ToString, FindComponentById, ResolveKeyValue, ResolveOptions, ToCamelCase } from "@benbraide/inlinejs";
+import {
+    AddDirectiveHandler,
+    CreateDirectiveHandlerCallback,
+    GetGlobal,
+    ToString,
+    FindComponentById,
+    ResolveKeyValue,
+    ResolveOptions,
+    ToCamelCase,
+    BindDirectiveExpansionRule
+} from "@benbraide/inlinejs";
 
 export const BindDirectiveHandler = CreateDirectiveHandlerCallback('bind', ({ componentId, component, contextElement, expression, argKey, argOptions }) => {
     argKey = argKey.trim();
@@ -21,10 +31,6 @@ export const BindDirectiveHandler = CreateDirectiveHandlerCallback('bind', ({ co
         },
     });
 });
-
-export function BindDirectiveExpansionRule(name: string){
-    return (name.startsWith(':') ? (GetGlobal().GetConfig().GetDirectiveName('bind') + name) : null);
-}
 
 export function BindDirectiveHandlerCompact(){
     AddDirectiveHandler(BindDirectiveHandler);

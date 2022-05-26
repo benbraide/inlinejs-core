@@ -8,7 +8,8 @@ import {
     EvaluateLater,
     GetGlobal,
     ToCamelCase,
-    ResolveOptions
+    ResolveOptions,
+    OnDirectiveExpansionRule
 } from "@benbraide/inlinejs";
 
 const keyEvents = ['keydown', 'keyup'], mobileMap = {
@@ -157,10 +158,6 @@ export const OnDirectiveHandler = CreateDirectiveHandlerCallback('on', ({ compon
         }
     }
 });
-
-export function OnDirectiveExpansionRule(name: string){
-    return (name.startsWith('@') ? name.replace('@', GetGlobal().GetConfig().GetDirectiveName('on:')) : null);
-}
 
 export function OnDirectiveHandlerCompact(){
     AddDirectiveHandler(OnDirectiveHandler);

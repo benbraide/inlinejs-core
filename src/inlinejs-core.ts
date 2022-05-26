@@ -1,4 +1,4 @@
-import { GetGlobal, AutoBootstrap, AttributeInterpolator, TextContentInterpolator } from '@benbraide/inlinejs';
+import { WaitForGlobal } from '@benbraide/inlinejs';
 
 import { DataDirectiveHandlerCompact } from './directive/data/data';
 import { ComponentDirectiveHandlerCompact } from './directive/data/component';
@@ -51,58 +51,55 @@ import { ClassMagicHandlerCompact } from './magic/class';
 import { EvaluateMagicHandlerCompact } from './magic/evaluate';
 import { DomMagicHandlerCompact } from './magic/dom';
 
-AutoBootstrap();
+WaitForGlobal().then(() => {
+    DataDirectiveHandlerCompact();
+    ComponentDirectiveHandlerCompact();
+    LocalsDirectiveHandlerCompact();
+    RefDirectiveHandlerCompact();
 
-GetGlobal().AddAttributeProcessor(AttributeInterpolator);
-GetGlobal().AddTextContentProcessor(TextContentInterpolator);
+    PostDirectiveHandlerCompact();
+    UninitDirectiveHandlerCompact();
 
-DataDirectiveHandlerCompact();
-ComponentDirectiveHandlerCompact();
-LocalsDirectiveHandlerCompact();
-RefDirectiveHandlerCompact();
+    StaticDirectiveHandlerCompact();
+    EffectDirectiveHandlerCompact();
 
-PostDirectiveHandlerCompact();
-UninitDirectiveHandlerCompact();
+    CloakDirectiveHandlerCompact();
 
-StaticDirectiveHandlerCompact();
-EffectDirectiveHandlerCompact();
+    BindDirectiveHandlerCompact();
+    ClassDirectiveHandlerCompact();
+    StyleDirectiveHandlerCompact();
 
-CloakDirectiveHandlerCompact();
+    TextDirectiveHandlerCompact();
+    HtmlDirectiveHandlerCompact();
+    OnDirectiveHandlerCompact();
+    ModelDirectiveHandlerCompact();
 
-BindDirectiveHandlerCompact();
-ClassDirectiveHandlerCompact();
-StyleDirectiveHandlerCompact();
+    ShowDirectiveHandlerCompact();
 
-TextDirectiveHandlerCompact();
-HtmlDirectiveHandlerCompact();
-OnDirectiveHandlerCompact();
-ModelDirectiveHandlerCompact();
+    IfDirectiveHandlerCompact();
+    ElseDirectiveHandlerCompact();
+    EachDirectiveHandlerCompact();
 
-ShowDirectiveHandlerCompact();
+    ComponentMagicHandlerCompact();
+    LocalsMagicHandlerCompact();
+    RefsMagicHandlerCompact();
+    ScopeMagicHandlerCompact();
+    ProxyMagicHandlerCompact();
+    NativeMagicHandlerCompact();
+    WaitMagicHandlerCompact();
+    StreamMagicHandlerCompact();
 
-IfDirectiveHandlerCompact();
-ElseDirectiveHandlerCompact();
-EachDirectiveHandlerCompact();
+    StaticMagicHandlerCompact();
+    UnoptimizedMagicHandlerCompact();
+    WatchMagicHandlerCompact();
 
-ComponentMagicHandlerCompact();
-LocalsMagicHandlerCompact();
-RefsMagicHandlerCompact();
-ScopeMagicHandlerCompact();
-ProxyMagicHandlerCompact();
-NativeMagicHandlerCompact();
-WaitMagicHandlerCompact();
-StreamMagicHandlerCompact();
+    ArithmeticMagicHandlerCompact();
+    RelationalMagicHandlerCompact();
+    LogicalMagicHandlerCompact();
 
-StaticMagicHandlerCompact();
-UnoptimizedMagicHandlerCompact();
-WatchMagicHandlerCompact();
-
-ArithmeticMagicHandlerCompact();
-RelationalMagicHandlerCompact();
-LogicalMagicHandlerCompact();
-
-NextTickMagicHandlerCompact();
-PickMagicHandlerCompact();
-ClassMagicHandlerCompact();
-EvaluateMagicHandlerCompact();
-DomMagicHandlerCompact();
+    NextTickMagicHandlerCompact();
+    PickMagicHandlerCompact();
+    ClassMagicHandlerCompact();
+    EvaluateMagicHandlerCompact();
+    DomMagicHandlerCompact();
+});
