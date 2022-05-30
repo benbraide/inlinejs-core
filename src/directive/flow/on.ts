@@ -74,7 +74,7 @@ export const OnDirectiveHandler = CreateDirectiveHandlerCallback('on', ({ compon
         }
 
         if (keyOptions && keyOptions.list.length > 0){
-            let key = (e as KeyboardEvent).key.toLowerCase();
+            let key = ((e as KeyboardEvent).key || '').toLowerCase();
             if (keyOptions.list.findIndex(item => (Array.isArray(item) ? item.includes(key) : (item === key))) == -1){
                 return;//Key pressed doesn't match any specified
             }

@@ -73,7 +73,8 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
                 },
                 setter: (prop, value) => {
                     let scope = FindComponentById(componentId)?.GetRootProxy().GetNative()[scopeId];
-                    return ((scope && prop) ? (scope[prop] = value) : true);
+                    (scope && prop) && (scope[prop] = value);
+                    return true;
                 },
                 lookup: () => true,
             }));
@@ -85,7 +86,8 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
                 },
                 setter: (prop, value) => {
                     let component = FindComponentById(componentId), parent = component?.FindElementLocalValue((component?.FindAncestor(contextElement) || ''), key, true);
-                    return ((parent && !GetGlobal().IsNothing(parent) && prop) ? (parent[prop] = value) : true);
+                    (parent && !GetGlobal().IsNothing(parent) && prop) && (parent[prop] = value);
+                    return true;
                 },
                 lookup: () => true,
             }));
@@ -103,7 +105,8 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
             elementScope.SetLocal(key, CreateInplaceProxy(BuildProxyOptions({
                 getter: (prop) => (prop ? proxy[prop] : undefined),
                 setter: (prop, value) => {
-                    return (prop ? (proxy[prop] = value) : true);
+                    prop && (proxy[prop] = value);
+                    return true;
                 },
                 lookup: () => true,
             })));
