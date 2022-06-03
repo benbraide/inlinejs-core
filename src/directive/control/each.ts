@@ -52,7 +52,7 @@ export const EachDirectiveHandler = CreateDirectiveHandlerCallback('each', ({ co
 
     let key = (((component || FindComponentById(componentId))?.FindElementScope(contextElement)?.GetKey()) || null);
     if (!key){//Check if attribute is present
-        key = GetDirectiveValue(contextElement, 'key', ':key');
+        key = GetDirectiveValue(contextElement, 'bind:key', ':key');
     }
     
     let evaluateKey = (key ? EvaluateLater({ componentId, contextElement, expression: key }) : null), getKey = (index: number, list: Array<any>) => {
