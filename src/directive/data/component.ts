@@ -9,7 +9,6 @@ export const ComponentDirectiveHandler = CreateDirectiveHandlerCallback('compone
         
         resolveComponent.SetName(name);
         elementScope?.SetLocal('$name', name);
-        elementScope?.SetLocal('$componentName', name);
     };
     
     if (argKey === 'evaluate'){

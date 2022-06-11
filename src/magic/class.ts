@@ -6,10 +6,12 @@ export const ClassMagicHandler = CreateMagicHandlerCallback('class', ({ componen
         return proxy;
     }
 
-    let methods = {
-        add: (...values: string[]) => contextElement.classList.add(...values),
-        remove: (...values: string[]) => contextElement.classList.remove(...values.filter(value => contextElement.classList.contains(value))),
+    let add = (...values: string[]) => contextElement.classList.add(...values);
+    let remove = (...values: string[]) => contextElement.classList.remove(...values.filter(value => contextElement.classList.contains(value)));
+    
+    let methods = { add, remove,
         toggle: (...values: string[]) => values.map(value => contextElement.classList.toggle(value)),
+        toggleOn: (state: boolean, ...values: string[]) => (state ? add(...values) : remove(...values)),
         set: (...values: string[]) => (contextElement.className = values.join(' ')),
         contains: (...values: string[]) => (values.findIndex(value => !contextElement.classList.contains(value)) == -1),
     };

@@ -140,6 +140,8 @@ describe('x-data directive', () => {
         TextDirectiveHandlerCompact();
         OnDirectiveHandlerCompact();
 
+        debugger;
+
         BootstrapAndAttach();
 
         expect(document.querySelectorAll('span')[0].textContent).equal('bar');

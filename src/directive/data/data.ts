@@ -38,7 +38,7 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
         data = ((IsObject(data) && data) || {});
 
         let config: IDataConfigDetails | null = null;
-        if ('$config' in data){
+        if (data.hasOwnProperty('$config')){
             config = data['$config'];
             delete data['$config'];
         }
@@ -47,7 +47,7 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
             Object.entries(config!.locals!).forEach(([key, value]) => elementScope!.SetLocal(key, value));
         }
         
-        let proxy = component.GetRootProxy().GetNative(), proxyTarget = GetTarget(proxy), target: Record<string, any>, key = `$${ContextKeys.scope}`;
+        let id: string,  proxy: any, parentLocal: object | null, key = `$${ContextKeys.scope}`;
         if (component.GetRoot() !== contextElement){//Add new scope
             let scope = component.CreateScope(contextElement);
             if (!scope){
@@ -55,31 +55,14 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
                 return;
             }
 
-            let scopeId = scope.GetId();
-            if (config?.name){
-                scope.SetName(config.name);
-            }
+            id = scope.GetId();
+            config?.name && scope.SetName(config.name);
 
-            PushCurrentScope(component, scopeId);
+            PushCurrentScope(component, id);
             elementScope.AddPostProcessCallback(() => PopCurrentScope(componentId));
             
-            target = {};
-            proxy[scopeId] = target;//FindComponentById(componentId)?.FindScopeById(scopeId)?.GetName()
-
-            let local = CreateInplaceProxy(BuildProxyOptions({
-                getter: (prop) => {
-                    let scope = FindComponentById(componentId)?.GetRootProxy().GetNative()[scopeId];
-                    return ((scope && prop) ? scope[prop] : undefined);
-                },
-                setter: (prop, value) => {
-                    let scope = FindComponentById(componentId)?.GetRootProxy().GetNative()[scopeId];
-                    (scope && prop) && (scope[prop] = value);
-                    return true;
-                },
-                lookup: () => true,
-            }));
-
-            let parentLocal = CreateInplaceProxy(BuildProxyOptions({
+            proxy = scope.GetProxy().GetNative();
+            parentLocal = CreateInplaceProxy(BuildProxyOptions({
                 getter: (prop) => {
                     let component = FindComponentById(componentId), parent = component?.FindElementLocalValue((component?.FindAncestor(contextElement) || ''), key, true);
                     return ((parent && !GetGlobal().IsNothing(parent) && prop) ? parent[prop] : undefined);
@@ -91,36 +74,35 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
                 },
                 lookup: () => true,
             }));
-
-            elementScope.SetLocal(key, local);
-            elementScope.SetLocal('$parent', parentLocal);
-            config?.name && elementScope.SetLocal('$name', config.name);
-            elementScope.AddUninitCallback(() => FindComponentById(componentId)?.RemoveScope(scopeId));
+            
+            elementScope.AddUninitCallback(() => FindComponentById(componentId)?.RemoveScope(id));
         }
         else{//Root scope
-            target = proxyTarget;
-            elementScope.SetLocal('$parent', null);
-            elementScope.SetLocal('$name', (config?.name || ''));
-            elementScope.SetLocal('$componentName', (config?.name || ''));
-            elementScope.SetLocal(key, CreateInplaceProxy(BuildProxyOptions({
-                getter: (prop) => (prop ? proxy[prop] : undefined),
-                setter: (prop, value) => {
-                    prop && (proxy[prop] = value);
-                    return true;
-                },
-                lookup: () => true,
-            })));
-            
-            if (config?.reactiveState){
-                component.SetReactiveState(config.reactiveState);
-            }
+            id = componentId;
 
-            if (config?.name){
-                component.SetName(config.name);
-            }
+            config?.reactiveState && component.SetReactiveState(config.reactiveState);
+            config?.name && component.SetName(config.name);
+            
+            proxy = component.GetRootProxy().GetNative();
+            parentLocal = null;
         }
 
+        elementScope.SetLocal('$parent', parentLocal);
+        config?.name && elementScope.SetLocal('$name', config.name);
+        elementScope.SetLocal('$id', id);
+        
+        elementScope.SetLocal(key, CreateInplaceProxy(BuildProxyOptions({
+            getter: (prop) => (prop ? proxy[prop] : undefined),
+            setter: (prop, value) => {
+                prop && (proxy[prop] = value);
+                return true;
+            },
+            lookup: () => true,
+        })));
+
+        let target = GetTarget(proxy);
         Object.entries(data).forEach(([key, value]) => (target[key] = value));
+
         if (config?.init){//Evaluate init callback
             let { context } = component.GetBackend();
             

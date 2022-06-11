@@ -9,14 +9,47 @@ const props = {
 
 let proxy: object | null = null;
 
-export const DomMagicHandler = CreateMagicHandlerCallback('dom', (params) => {
+export const DomMagicHandler = CreateMagicHandlerCallback('dom', ({ contextElement, componentId, component, ...rest }) => {
     return (proxy || (proxy = CreateInplaceProxy(BuildGetterProxyOptions({
         getter: (prop) => {
             if (prop && props.hasOwnProperty(prop)){
-                return props[prop](params);
+                return props[prop]({ contextElement, componentId, component, ...rest });
+            }
+
+            if (prop === 'siblings'){
+                if (!contextElement.parentElement || contextElement === (component || FindComponentById(componentId))?.GetRoot()){
+                    return () => null;
+                }
+                
+                return (index?: number | string) => {
+                    let children = [...(contextElement.parentElement?.children || [])];
+                    if (index === 'prev' || index === 'previous'){
+                        let index = children.findIndex(child => (child === contextElement));
+                        return ((index > 0) ? (children.at(index - 1) || null) : null);
+                    }
+
+                    if (index === 'next'){
+                        let index = children.findIndex(child => (child === contextElement));
+                        return ((index >= 0 && index < (children.length - 1)) ? (children.at(index + 1) || null) : null);
+                    }
+                    
+                    if (typeof index === 'number'){
+                        return (children.filter(child => (child !== contextElement)).at(index) || null);
+                    }
+
+                    if (index === 'first'){
+                        return (children.filter(child => (child !== contextElement)).at(0) || null);
+                    }
+
+                    if (index === 'last'){
+                        return (children.filter(child => (child !== contextElement)).at(-1) || null);
+                    }
+
+                    return children.filter(child => (child !== contextElement));
+                }
             }
         },
-        lookup: Object.keys(props),
+        lookup: [...Object.keys(props), 'siblings'],
     }))));
 });
 
