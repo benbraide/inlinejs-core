@@ -34,8 +34,6 @@ import { RefsMagicHandlerCompact } from './magic/data/refs';
 import { ScopeMagicHandlerCompact } from './magic/data/scope';
 import { ProxyMagicHandlerCompact } from './magic/data/proxy';
 import { NativeMagicHandlerCompact } from './magic/data/native';
-import { WaitMagicHandlerCompact } from './magic/data/wait';
-import { StreamMagicHandlerCompact } from './magic/data/stream';
 
 import { StaticMagicHandlerCompact } from './magic/reactive/static';
 import { UnoptimizedMagicHandlerCompact } from './magic/reactive/unoptimized';
@@ -86,8 +84,6 @@ WaitForGlobal().then(() => {
     ScopeMagicHandlerCompact();
     ProxyMagicHandlerCompact();
     NativeMagicHandlerCompact();
-    WaitMagicHandlerCompact();
-    StreamMagicHandlerCompact();
 
     StaticMagicHandlerCompact();
     UnoptimizedMagicHandlerCompact();

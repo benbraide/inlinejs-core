@@ -27,8 +27,6 @@ export * from './magic/data/native';
 export * from './magic/data/proxy';
 export * from './magic/data/refs';
 export * from './magic/data/scope';
-export * from './magic/data/stream';
-export * from './magic/data/wait';
 export * from './magic/operations/arithmetic';
 export * from './magic/operations/logical';
 export * from './magic/operations/relational';
