@@ -16,6 +16,7 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
             number: false,
             forced: false,
             trim: false,
+            value: false,
             debounce: -1,
         },
         list: argOptions,
@@ -31,15 +32,18 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
             expression: `(${expression}) = (${value})`,
         })();
     };
-    
+
+    let getValueExpr = () => 'this.value ? this.value.trim() : \'\'';
+
     let isRadio = (contextElement instanceof HTMLInputElement && contextElement.type === 'radio');
     let isCheckable = (isRadio || (contextElement instanceof HTMLInputElement && contextElement.type === 'checkbox'));
+
     let ref: any = null, hotValue = false, assign = () => {
-        if (!isCheckable && (contextElement instanceof HTMLInputElement || contextElement instanceof HTMLTextAreaElement)){
-            let transformed = transformData(contextElement.value);
-            evaluateAssignment((typeof transformed === 'number') ? transformed : `'${ToString(transformed)}'`);
+        if (isRadio){
+            let transformed = transformData((contextElement as HTMLInputElement).value);
+            evaluateAssignment((contextElement as HTMLInputElement).checked ? ((typeof transformed === 'number') ? transformed : getValueExpr()) : '');
         }
-        else if (isCheckable && !isRadio){
+        else if (isCheckable){
             if (Array.isArray(ref)){//Add value to array
                 let transformed = transformData((contextElement as HTMLInputElement).value), index = ref.indexOf(transformed);
                 if (index == -1 && (contextElement as HTMLInputElement).checked){
@@ -53,16 +57,19 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
                 evaluateAssignment((contextElement as HTMLInputElement).checked ? 'true' : 'false');
             }
         }
-        else if (isRadio){
-            let transformed = transformData((contextElement as HTMLInputElement).value);
-            evaluateAssignment((contextElement as HTMLInputElement).checked ? ((typeof transformed === 'number') ? transformed : `'${ToString(transformed)}'`) : '');
+        else if (!options.value && contextElement instanceof HTMLInputElement && contextElement.type === 'file'){
+            contextElement.files?.length ? evaluateAssignment(contextElement.multiple ? 'this.files' : 'this.files[0]') : evaluateAssignment('null');
+        }
+        else if (contextElement instanceof HTMLInputElement || contextElement instanceof HTMLTextAreaElement){
+            let transformed = transformData(contextElement.value);
+            evaluateAssignment((typeof transformed === 'number') ? transformed : getValueExpr());
         }
         else if ((contextElement as HTMLSelectElement).multiple){//Retrieve all selected
             let value = Array.from((contextElement as HTMLSelectElement).selectedOptions).map(item => transformData(item.value));
             evaluateAssignment(JSON.stringify(value));
         }
         else{//Single select
-            evaluateAssignment(`'${(contextElement as HTMLSelectElement).value}'`);
+            evaluateAssignment(getValueExpr());
         }
     };
 

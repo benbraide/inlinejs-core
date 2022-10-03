@@ -1,4 +1,6 @@
-import { WaitForGlobal } from '@benbraide/inlinejs';
+import { GetGlobal, WaitForGlobal } from '@benbraide/inlinejs';
+
+import { CodeConcept } from './concept/code';
 
 import { DataDirectiveHandlerCompact } from './directive/data/data';
 import { ComponentDirectiveHandlerCompact } from './directive/data/component';
@@ -23,6 +25,8 @@ import { OnDirectiveHandlerCompact } from './directive/flow/on';
 import { ModelDirectiveHandlerCompact } from './directive/flow/model';
 
 import { ShowDirectiveHandlerCompact } from './directive/show';
+
+import { CodeDirectiveHandlerCompact } from './directive/code';
 
 import { IfDirectiveHandlerCompact } from './directive/control/if';
 import { ElseDirectiveHandlerCompact } from './directive/control/else';
@@ -49,7 +53,11 @@ import { ClassMagicHandlerCompact } from './magic/class';
 import { EvaluateMagicHandlerCompact } from './magic/evaluate';
 import { DomMagicHandlerCompact } from './magic/dom';
 
+import { CodeMagicHandlerCompact } from './magic/code';
+
 WaitForGlobal().then(() => {
+    GetGlobal().SetConcept('code', new CodeConcept);
+    
     DataDirectiveHandlerCompact();
     ComponentDirectiveHandlerCompact();
     LocalsDirectiveHandlerCompact();
@@ -73,10 +81,12 @@ WaitForGlobal().then(() => {
     ModelDirectiveHandlerCompact();
 
     ShowDirectiveHandlerCompact();
-
+    
     IfDirectiveHandlerCompact();
     ElseDirectiveHandlerCompact();
     EachDirectiveHandlerCompact();
+
+    CodeDirectiveHandlerCompact();
 
     ComponentMagicHandlerCompact();
     LocalsMagicHandlerCompact();
@@ -98,4 +108,6 @@ WaitForGlobal().then(() => {
     ClassMagicHandlerCompact();
     EvaluateMagicHandlerCompact();
     DomMagicHandlerCompact();
+
+    CodeMagicHandlerCompact();
 });

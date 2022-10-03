@@ -1,3 +1,7 @@
+export * from './types'
+
+export * from './concept/code'
+
 export * from './directive/attr/bind'
 export * from './directive/attr/class'
 export * from './directive/attr/style'
@@ -28,6 +32,8 @@ export * from './directive/reactive/static'
 export * from './directive/show'
 export * from './directive/cloak'
 
+export * from './directive/code'
+
 export * from './magic/data/component'
 export * from './magic/data/locals'
 export * from './magic/data/native'
@@ -48,3 +54,5 @@ export * from './magic/dom'
 export * from './magic/evaluate'
 export * from './magic/nexttick'
 export * from './magic/pick'
+
+export * from './magic/code'
