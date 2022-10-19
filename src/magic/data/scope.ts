@@ -5,7 +5,10 @@ export const ScopeMagicHandler = CreateMagicHandlerCallback('scope', ({ componen
 });
 
 export const ScopesMagicHandler = CreateMagicHandlerCallback('scopes', ({ componentId }) => {
-    return CreateInplaceProxy(BuildGetterProxyOptions({ getter: prop => FindComponentById(componentId)?.FindScopeByName(prop!), lookup: () => true}));
+    return CreateInplaceProxy(BuildGetterProxyOptions({
+        getter: prop => (FindComponentById(componentId)?.FindScopeByName(prop!) || FindComponentById(componentId)?.FindScopeById(prop!)),
+        lookup: () => true,
+    }));
 });
 
 export function ScopeMagicHandlerCompact(){
