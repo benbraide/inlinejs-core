@@ -88,6 +88,11 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
         }
 
         elementScope.SetLocal('$parent', parentLocal);
+        elementScope.SetLocal('$ancestor', (index = 0) => {
+            let component = FindComponentById(componentId), ancestor = component?.FindAncestor(contextElement, (index || 0));
+            return (ancestor ? component!.FindElementLocalValue(ancestor, key, true) : undefined);
+        });
+        
         config?.name && elementScope.SetLocal('$name', config.name);
         elementScope.SetLocal('$id', id);
         

@@ -56,3 +56,4 @@ export * from './magic/nexttick'
 export * from './magic/pick'
 
 export * from './magic/code'
+export * from './magic/inline'

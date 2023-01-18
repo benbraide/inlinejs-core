@@ -54,6 +54,7 @@ import { EvaluateMagicHandlerCompact } from './magic/evaluate';
 import { DomMagicHandlerCompact } from './magic/dom';
 
 import { CodeMagicHandlerCompact } from './magic/code';
+import { InlineJSMagicHandlerCompact } from './magic/inline';
 
 WaitForGlobal().then(() => {
     GetGlobal().SetConcept('code', new CodeConcept);
@@ -108,6 +109,7 @@ WaitForGlobal().then(() => {
     ClassMagicHandlerCompact();
     EvaluateMagicHandlerCompact();
     DomMagicHandlerCompact();
-
+    
     CodeMagicHandlerCompact();
+    InlineJSMagicHandlerCompact();
 });
