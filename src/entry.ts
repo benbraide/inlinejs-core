@@ -49,7 +49,11 @@ import { LogicalMagicHandlerCompact } from './magic/operations/logical';
 
 import { NextTickMagicHandlerCompact } from './magic/nexttick';
 import { PickMagicHandlerCompact } from './magic/pick';
+
+import { AttributeMagicHandlerCompact } from './magic/attribute';
 import { ClassMagicHandlerCompact } from './magic/class';
+import { StyleMagicHandlerCompact } from './magic/style';
+
 import { EvaluateMagicHandlerCompact } from './magic/evaluate';
 import { DomMagicHandlerCompact } from './magic/dom';
 
@@ -107,7 +111,11 @@ export function InlineJSCore(){
 
         NextTickMagicHandlerCompact();
         PickMagicHandlerCompact();
+
+        AttributeMagicHandlerCompact();
         ClassMagicHandlerCompact();
+        StyleMagicHandlerCompact();
+        
         EvaluateMagicHandlerCompact();
         DomMagicHandlerCompact();
         

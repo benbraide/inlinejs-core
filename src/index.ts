@@ -49,7 +49,10 @@ export * from './magic/reactive/static'
 export * from './magic/reactive/unoptimized'
 export * from './magic/reactive/watch'
 
+export * from './magic/attribute'
 export * from './magic/class'
+export * from './magic/style'
+
 export * from './magic/dom'
 export * from './magic/evaluate'
 export * from './magic/nexttick'
