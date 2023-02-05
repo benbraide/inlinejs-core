@@ -59,6 +59,7 @@ import { DomMagicHandlerCompact } from './magic/dom';
 
 import { CodeMagicHandlerCompact } from './magic/code';
 import { InlineJSMagicHandlerCompact } from './magic/inline';
+import { WaitingMagicHandlerCompact } from './magic/waiting';
 
 import { CodeElementCompact } from './components/code';
 
@@ -123,6 +124,7 @@ export function InlineJSCore(){
         
         CodeMagicHandlerCompact();
         InlineJSMagicHandlerCompact();
+        WaitingMagicHandlerCompact();
 
         CodeElementCompact();
     });
