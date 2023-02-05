@@ -60,6 +60,8 @@ import { DomMagicHandlerCompact } from './magic/dom';
 import { CodeMagicHandlerCompact } from './magic/code';
 import { InlineJSMagicHandlerCompact } from './magic/inline';
 
+import { CodeElementCompact } from './components/code';
+
 export function InlineJSCore(){
     WaitForGlobal().then(() => {
         GetGlobal().SetConcept('code', new CodeConcept);
@@ -121,5 +123,7 @@ export function InlineJSCore(){
         
         CodeMagicHandlerCompact();
         InlineJSMagicHandlerCompact();
+
+        CodeElementCompact();
     });
 }

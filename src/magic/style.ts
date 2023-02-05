@@ -8,11 +8,11 @@ export const StyleMagicHandler = CreateMagicHandlerCallback('style', ({ componen
 
     let methods = {
         unset(...keys: string[]){
-            keys.forEach(key => (key in contextElement.style) && contextElement.style.removeProperty(key));
+            keys.forEach(key => (key in contextElement.style) && (contextElement.style[key] = ''));
             return this;
         },
         set(key: string, value: string | undefined){
-            (key in contextElement.style) && ((value === undefined) ? this.unset(key) : contextElement.style[key] = value);
+            (key in contextElement.style) && ((value === undefined) ? this.unset(key) : contextElement.style[key] = (value || ''));
             return this;
         },
         toggle(predicate: boolean, key: string, tValue: string, fValue: string | undefined = undefined){
