@@ -7,7 +7,8 @@ import {
     ResolveKeyValue,
     ResolveOptions,
     ToCamelCase,
-    BindDirectiveExpansionRule
+    BindDirectiveExpansionRule,
+    IsBooleanAttribute
 } from "@benbraide/inlinejs";
 
 export const BindDirectiveHandler = CreateDirectiveHandlerCallback('bind', ({ componentId, component, contextElement, expression, argKey, argOptions }) => {
@@ -21,7 +22,7 @@ export const BindDirectiveHandler = CreateDirectiveHandlerCallback('bind', ({ co
         key: argKey,
         callback: ([key, value]) => {
             key = (options.camel ? ToCamelCase(key) : key);
-            let isBoolean = GetGlobal().GetConfig().IsBooleanAttribute(key);
+            let isBoolean = IsBooleanAttribute(contextElement, key);
             if (value || ((value === 0 || value === '') && !isBoolean)){//Set
                 contextElement.setAttribute(key, (isBoolean ? key : ToString(value)));
             }

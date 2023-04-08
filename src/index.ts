@@ -33,6 +33,7 @@ export * from './directive/show'
 export * from './directive/cloak'
 
 export * from './directive/code'
+export * from './directive/cooldown'
 
 export * from './magic/data/component'
 export * from './magic/data/locals'
