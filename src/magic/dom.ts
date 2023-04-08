@@ -7,10 +7,8 @@ const props = {
     parent: ({ componentId, contextElement }: IMagicHandlerParams) => FindComponentById(componentId)?.FindAncestor(contextElement, 0),
 };
 
-let proxy: object | null = null;
-
 export const DomMagicHandler = CreateMagicHandlerCallback('dom', ({ contextElement, componentId, component, ...rest }) => {
-    return (proxy || (proxy = CreateInplaceProxy(BuildGetterProxyOptions({
+    return CreateInplaceProxy(BuildGetterProxyOptions({
         getter: (prop) => {
             if (prop && props.hasOwnProperty(prop)){
                 return props[prop]({ contextElement, componentId, component, ...rest });
@@ -50,7 +48,7 @@ export const DomMagicHandler = CreateMagicHandlerCallback('dom', ({ contextEleme
             }
         },
         lookup: [...Object.keys(props), 'siblings'],
-    }))));
+    }));
 });
 
 export function DomMagicHandlerCompact(){
