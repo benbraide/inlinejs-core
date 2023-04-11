@@ -1,4 +1,4 @@
-import { AddMagicHandler, CreateMagicHandlerCallback } from "@benbraide/inlinejs";
+import { AddMagicHandler, CreateMagicHandlerCallback, RandomString } from "@benbraide/inlinejs";
 
 export const InlineJSMagicHandler = CreateMagicHandlerCallback('inlinejs', () => (globalThis['InlineJS'] || null));
 
@@ -8,11 +8,10 @@ export const InlineJSUtilitiesMagicHandler = CreateMagicHandlerCallback('utiliti
 
 export const InlineJSValuesMagicHandler = CreateMagicHandlerCallback('values', () => ((globalThis['InlineJS'] && globalThis['InlineJS']['values']) || null));
 
-export const InlineJSRandomMagicHandler = CreateMagicHandlerCallback('random', () => {
-    return (length = 9) => {
-        const rand = (globalThis['InlineJS'] && globalThis['InlineJS']['utilities'] && globalThis['InlineJS']['utilities']['getRandomString']);
-        return (rand ? rand(length) : null);
-    };
+export const InlineJSVersionMagicHandler = CreateMagicHandlerCallback('version', () => ((globalThis['InlineJS'] && globalThis['InlineJS']['version']) || null));
+
+export const InlineJSRandomMagicHandler = CreateMagicHandlerCallback('randstr', () => {
+    return (length = 9) => RandomString(length);
 });
 
 export function InlineJSMagicHandlerCompact(){
@@ -20,5 +19,6 @@ export function InlineJSMagicHandlerCompact(){
     AddMagicHandler(InlineJSGlobalMagicHandler);
     AddMagicHandler(InlineJSUtilitiesMagicHandler);
     AddMagicHandler(InlineJSValuesMagicHandler);
+    AddMagicHandler(InlineJSVersionMagicHandler);
     AddMagicHandler(InlineJSRandomMagicHandler);
 }

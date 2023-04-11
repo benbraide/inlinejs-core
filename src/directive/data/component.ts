@@ -1,14 +1,16 @@
 import { FindComponentById, AddDirectiveHandler, CreateDirectiveHandlerCallback, EvaluateLater, ToString } from "@benbraide/inlinejs";
 
 export const ComponentDirectiveHandler = CreateDirectiveHandlerCallback('component', ({ componentId, component, contextElement, expression, argKey }) => {
+    if ((component || FindComponentById(componentId))?.CreateElementScope(contextElement)?.IsInitialized()){
+        return;
+    }
+    
     let updateName = (name: string) => {
-        let resolveComponent = (component || FindComponentById(componentId)), elementScope = resolveComponent?.FindElementScope(resolveComponent.GetRoot());
-        if (!resolveComponent){
-            return;
+        let resolvedComponent = FindComponentById(componentId);
+        if (resolvedComponent && resolvedComponent.GetRoot() === contextElement){
+            resolvedComponent.SetName(name);
+            resolvedComponent.FindElementScope(contextElement)?.SetLocal('$name', name);
         }
-        
-        resolveComponent.SetName(name);
-        elementScope?.SetLocal('$name', name);
     };
     
     if (argKey === 'evaluate'){

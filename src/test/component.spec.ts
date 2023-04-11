@@ -4,9 +4,7 @@ import { describe, it } from 'mocha'
 import { waitFor } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
 
-let randomString = require("randomstring");
-
-import { CreateGlobal, BootstrapAndAttach } from '@benbraide/inlinejs';
+import { CreateGlobal, BootstrapAndAttach, RandomString } from '@benbraide/inlinejs';
 
 import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { TextDirectiveHandlerCompact } from '../directive/flow/text';
@@ -17,7 +15,7 @@ import { UnoptimizedMagicHandlerCompact } from '../magic/reactive/unoptimized';
 
 describe('component', () => {
     it('can be initialized with the \'x-component\' directive', () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data x-component="${key}">
                 <span x-text="$name"></span>
@@ -38,7 +36,7 @@ describe('component', () => {
     });
 
     it('can be initialized with the \'$config.name\' key during data initialization', () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ $config: { name: '${key}' } }">
                 <span x-text="$name"></span>
@@ -58,7 +56,7 @@ describe('component', () => {
     });
 
     it('can retrieve the current component name via the \'$name\' global magic property', () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ $config: { name: '${key}' } }">
                 <span x-text="$name"></span>
@@ -78,7 +76,7 @@ describe('component', () => {
     });
 
     it('can retrieve another component via the $component global magic property', () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ foo: 'bar' }" x-component="${key}"></div>
             <div x-data>
@@ -100,7 +98,7 @@ describe('component', () => {
     });
 
     it('should ensure data retrieved from other components are reactive', async () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ foo: 'bar' }" x-component="${key}">
                 <span x-text="foo"></span>
@@ -155,7 +153,7 @@ describe('component', () => {
     });
 
     it('should obey per region optimized setting when accessing data from other components', async () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ nested: {foo: 'bar'} }" x-component="${key}">
                 <span x-text="nested.foo"></span>
@@ -187,7 +185,7 @@ describe('component', () => {
     });
 
     it('should obey \'$unoptimized\' global magic property when accessing data from other components', async () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ nested: {foo: 'bar'} }" x-component="${key}">
                 <span x-text="nested.foo"></span>
@@ -220,7 +218,7 @@ describe('component', () => {
     });
 
     it('should not be affected by optimized settings in other components', async () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ nested: {foo: 'bar'} }" x-component="${key}">
                 <span x-text="nested.foo"></span>

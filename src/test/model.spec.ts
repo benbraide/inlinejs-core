@@ -4,9 +4,7 @@ import { describe, it } from 'mocha'
 import { waitFor, fireEvent } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
 
-let randomString = require("randomstring");
-
-import { CreateGlobal, BootstrapAndAttach, GetGlobal } from '@benbraide/inlinejs';
+import { CreateGlobal, BootstrapAndAttach, GetGlobal, RandomString } from '@benbraide/inlinejs';
 
 import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { TextDirectiveHandlerCompact } from '../directive/flow/text';
@@ -82,7 +80,7 @@ describe('x-model directive', () => {
     });
 
     it('should cast value to number if \'.number\' modifier is present', async () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ $config: { name: '${key}' }, foo: null }">
                 <input type="number" x-model.number="foo">
@@ -102,7 +100,7 @@ describe('x-model directive', () => {
     });
 
     it('should return original value if casting fails; numeric value if casting passes', async () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ $config: { name: '${key}' }, foo: 0, bar: '' }">
                 <input type="number" x-model.number="foo">

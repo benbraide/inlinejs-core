@@ -23,6 +23,7 @@ export * from './directive/flow/model'
 export * from './directive/flow/on'
 export * from './directive/flow/text'
 
+export * from './directive/lifecycle/init'
 export * from './directive/lifecycle/post'
 export * from './directive/lifecycle/uninit'
 
@@ -62,7 +63,5 @@ export * from './magic/pick'
 export * from './magic/code'
 export * from './magic/inline'
 export * from './magic/waiting'
-
-export * from './components/code'
 
 export * from './entry'

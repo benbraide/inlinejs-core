@@ -7,6 +7,7 @@ import { ComponentDirectiveHandlerCompact } from './directive/data/component';
 import { LocalsDirectiveHandlerCompact } from './directive/data/locals';
 import { RefDirectiveHandlerCompact } from './directive/data/ref';
 
+import { InitDirectiveHandlerCompact } from './directive/lifecycle/init';
 import { PostDirectiveHandlerCompact } from './directive/lifecycle/post';
 import { UninitDirectiveHandlerCompact } from './directive/lifecycle/uninit';
 
@@ -63,8 +64,6 @@ import { CodeMagicHandlerCompact } from './magic/code';
 import { InlineJSMagicHandlerCompact } from './magic/inline';
 import { WaitingMagicHandlerCompact } from './magic/waiting';
 
-import { CodeElementCompact } from './components/code';
-
 export function InlineJSCore(){
     WaitForGlobal().then(() => {
         GetGlobal().SetConcept('code', new CodeConcept);
@@ -74,6 +73,7 @@ export function InlineJSCore(){
         LocalsDirectiveHandlerCompact();
         RefDirectiveHandlerCompact();
 
+        InitDirectiveHandlerCompact();
         PostDirectiveHandlerCompact();
         UninitDirectiveHandlerCompact();
 
@@ -129,7 +129,5 @@ export function InlineJSCore(){
         CodeMagicHandlerCompact();
         InlineJSMagicHandlerCompact();
         WaitingMagicHandlerCompact();
-
-        CodeElementCompact();
     });
 }

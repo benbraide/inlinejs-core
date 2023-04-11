@@ -4,9 +4,7 @@ import { describe, it } from 'mocha'
 import { waitFor } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
 
-let randomString = require("randomstring");
-
-import { CreateGlobal, BootstrapAndAttach, GetGlobal } from '@benbraide/inlinejs';
+import { CreateGlobal, BootstrapAndAttach, GetGlobal, RandomString } from '@benbraide/inlinejs';
 
 import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { TextDirectiveHandlerCompact } from '../directive/flow/text';
@@ -15,7 +13,7 @@ import { UnoptimizedMagicHandlerCompact } from '../magic/reactive/unoptimized';
 
 describe('x-data directive', () => {
     it('should be reactive when manipulated on component object', async () => {
-        let key = randomString.generate(18);
+        let key = RandomString(18);
         document.body.innerHTML = `
             <div x-data="{ $config: { name: '${key}' }, foo: 'bar' }">
                 <span x-text="foo"></span>
