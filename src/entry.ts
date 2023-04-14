@@ -41,6 +41,7 @@ import { RefsMagicHandlerCompact } from './magic/data/refs';
 import { ScopeMagicHandlerCompact } from './magic/data/scope';
 import { ProxyMagicHandlerCompact } from './magic/data/proxy';
 import { NativeMagicHandlerCompact } from './magic/data/native';
+import { StoreMagicHandlerCompact } from './magic/data/store';
 
 import { StaticMagicHandlerCompact } from './magic/reactive/static';
 import { UnoptimizedMagicHandlerCompact } from './magic/reactive/unoptimized';
@@ -107,6 +108,7 @@ export function InlineJSCore(){
         ScopeMagicHandlerCompact();
         ProxyMagicHandlerCompact();
         NativeMagicHandlerCompact();
+        StoreMagicHandlerCompact();
 
         StaticMagicHandlerCompact();
         UnoptimizedMagicHandlerCompact();
