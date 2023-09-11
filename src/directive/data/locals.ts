@@ -1,6 +1,10 @@
 import { FindComponentById, AddDirectiveHandler, CreateDirectiveHandlerCallback, EvaluateLater, GetTarget, IsObject } from "@benbraide/inlinejs";
 
-export const LocalsDirectiveHandler = CreateDirectiveHandlerCallback('locals', ({ componentId, contextElement, expression }) => {
+export const LocalsDirectiveHandler = CreateDirectiveHandlerCallback('locals', ({ component, componentId, contextElement, expression }) => {
+    if ((component || FindComponentById(componentId))?.CreateElementScope(contextElement)?.IsInitialized()){
+        return;
+    }
+    
     EvaluateLater({ componentId, contextElement, expression })((data) => {
         let elementScope = FindComponentById(componentId)?.FindElementScope(contextElement);
 

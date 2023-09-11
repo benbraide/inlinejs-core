@@ -47,6 +47,7 @@ describe('data binding', () => {
         DataDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();
 
+        debugger;
         BootstrapAndAttach();
     
         expect(document.querySelectorAll('span')[0].textContent).equal('bar');

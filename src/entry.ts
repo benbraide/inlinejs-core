@@ -31,6 +31,8 @@ import { CodeDirectiveHandlerCompact } from './directive/code';
 
 import { CooldownDirectiveHandlerCompact } from './directive/cooldown';
 
+import { LogDirectiveHandlerCompact } from './directive/log';
+
 import { IfDirectiveHandlerCompact } from './directive/control/if';
 import { ElseDirectiveHandlerCompact } from './directive/control/else';
 import { EachDirectiveHandlerCompact } from './directive/control/each';
@@ -101,6 +103,8 @@ export function InlineJSCore(){
         CodeDirectiveHandlerCompact();
 
         CooldownDirectiveHandlerCompact();
+
+        LogDirectiveHandlerCompact();
 
         ComponentMagicHandlerCompact();
         LocalsMagicHandlerCompact();
