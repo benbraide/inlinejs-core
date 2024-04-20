@@ -10,11 +10,11 @@ import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 import { HtmlDirectiveHandlerCompact } from '../directive/flow/html';
 
-describe('x-html directive', () => {
+describe('hx-html directive', () => {
     it('should set text content on init', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-html="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-html="foo"></span>
             </div>
         `;
     
@@ -30,9 +30,9 @@ describe('x-html directive', () => {
 
     it('should be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <button x-on:click="foo = 'baz'"></button>
-                <span x-html="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <button hx-on:click="foo = 'baz'"></button>
+                <span hx-html="foo"></span>
             </div>
         `;
     
@@ -57,12 +57,14 @@ describe('x-html directive', () => {
         };
         
         document.body.innerHTML = `
-            <div x-data>
-                <span x-html="globalThis.asyncCall()"></span>
+            <div hx-data>
+                <span hx-html="globalThis.asyncCall()"></span>
             </div>
         `;
     
-        CreateGlobal();
+        CreateGlobal({
+            useGlobalWindow: true,
+        });
 
         DataDirectiveHandlerCompact();
         HtmlDirectiveHandlerCompact();

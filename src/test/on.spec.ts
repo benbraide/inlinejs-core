@@ -11,12 +11,12 @@ import { TextDirectiveHandlerCompact } from '../directive/flow/text';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 import { ClassDirectiveHandlerCompact } from '../directive/attr/class';
 
-describe('x-on directive', () => {
+describe('hx-on directive', () => {
     it('should reflect modified data in event listener to attribute bindings', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <button x-on:click="foo = 'baz'"></button>
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <button hx-on:click="foo = 'baz'"></button>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -37,9 +37,9 @@ describe('x-on directive', () => {
 
     it('should reflect modified nested data in event listener to attribute bindings', async () => {
         document.body.innerHTML = `
-            <div x-data="{ nested: { foo: 'bar' }}">
-                <button x-on:click="nested.foo = 'baz'"></button>
-                <span x-text="nested.foo"></span>
+            <div hx-data="{ nested: { foo: 'bar' }}">
+                <button hx-on:click="nested.foo = 'baz'"></button>
+                <span hx-text="nested.foo"></span>
             </div>
         `;
     
@@ -60,10 +60,10 @@ describe('x-on directive', () => {
 
     it('should stop propagation with the \'.stop\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }" x-on:click="foo = 'bubbled'">
-                <button x-on:click="foo = 'baz'"></button>
-                <button x-on:click.stop="foo = 'baz'"></button>
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }" hx-on:click="foo = 'bubbled'">
+                <button hx-on:click="foo = 'baz'"></button>
+                <button hx-on:click.stop="foo = 'baz'"></button>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -88,9 +88,9 @@ describe('x-on directive', () => {
 
     it('should prevent default with the \'.prevent\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{}">
-                <input type="checkbox" x-on:click>
-                <input type="checkbox" x-on:click.prevent>
+            <div hx-data="{}">
+                <input type="checkbox" hx-on:click>
+                <input type="checkbox" hx-on:click.prevent>
             </div>
         `;
     
@@ -115,11 +115,11 @@ describe('x-on directive', () => {
 
     it('should only trigger when event target is element with the \'.self\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <div x-on:click.self="foo = 'baz'" id="selfTarget">
+            <div hx-data="{ foo: 'bar' }">
+                <div hx-on:click.self="foo = 'baz'" id="selfTarget">
                     <button></button>
                 </div>
-                <span x-text="foo"></span>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -144,9 +144,9 @@ describe('x-on directive', () => {
 
     it('should bind event on the window object with the \'.window\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <div x-on:click.window="foo = 'baz'"></div>
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <div hx-on:click.window="foo = 'baz'"></div>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -167,9 +167,9 @@ describe('x-on directive', () => {
 
     it('should bind event on the document object with the \'.document\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <div x-on:click.document="foo = 'baz'"></div>
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <div hx-on:click.document="foo = 'baz'"></div>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -190,9 +190,9 @@ describe('x-on directive', () => {
 
     it('should only trigger when target is not element or contained inside element with the \'.outside\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{ isOpen: true }">
-                <ul x-class:hidden="! isOpen" x-on:click.outside="isOpen = false">
-                    <li x-on:click="isOpen = true">...</li>
+            <div hx-data="{ isOpen: true }">
+                <ul hx-class:hidden="! isOpen" hx-on:click.outside="isOpen = false">
+                    <li hx-on:click="isOpen = true">...</li>
                 </ul>
                 <button></button>
             </div>
@@ -227,9 +227,9 @@ describe('x-on directive', () => {
 
     it('should trigger only once with the \'.once\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{ count: 0 }">
-                <button x-on:click.once="++count"></button>
-                <span x-text="count"></span>
+            <div hx-data="{ count: 0 }">
+                <button hx-on:click.once="++count"></button>
+                <span hx-text="count"></span>
             </div>
         `;
     
@@ -254,9 +254,9 @@ describe('x-on directive', () => {
 
     it('should handle keydown events with modifiers', async () => {
         document.body.innerHTML = `
-            <div x-data="{ count: 0 }">
-                <input type="text" x-on:keydown="count++" x-on:keydown.enter="count++" x-on:keydown.space="count++">
-                <span x-text="count"></span>
+            <div hx-data="{ count: 0 }">
+                <input type="text" hx-on:keydown="count++" hx-on:keydown.state.enter="count++" hx-on:keydown.state.space="count++">
+                <span hx-text="count"></span>
             </div>
         `;
     
@@ -276,22 +276,22 @@ describe('x-on directive', () => {
     
         userEvent.type(document.querySelector('input')!, ' ');
     
-        await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('4') });
+        await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('5') });
     
         userEvent.type(document.querySelector('input')!, '{space}');
     
-        await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('6') });
+        await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('8') });
     
         userEvent.type(document.querySelector('input')!, '{esc}');
     
-        await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('7') });
+        await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('11') });
     });
 
     it('should handle keydown events with exclusive modifiers', async () => {
         document.body.innerHTML = `
-            <div x-data="{ count: 0 }">
-                <input type="text" x-on:keydown="count++" x-on:keydown.enter.space="count++">
-                <span x-text="count"></span>
+            <div hx-data="{ count: 0 }">
+                <input type="text" hx-on:keydown="count++" hx-on:keydown.state.enter.space="count++">
+                <span hx-text="count"></span>
             </div>
         `;
     
@@ -319,14 +319,14 @@ describe('x-on directive', () => {
     
         userEvent.type(document.querySelector('input')!, '{esc}');
     
-        await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('7') });
+        await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('8') });
     });
 
     it('should handle keydown events with combo modifiers', async () => {
         document.body.innerHTML = `
-            <div x-data="{ count: 0 }">
-                <input type="text" x-on:keydown.ctrl.enter="count++">
-                <span x-text="count"></span>
+            <div hx-data="{ count: 0 }">
+                <input type="text" hx-on:keydown.ctrl.enter="count++">
+                <span hx-text="count"></span>
             </div>
         `;
     
@@ -351,11 +351,11 @@ describe('x-on directive', () => {
 
     it('should only stop propagation for keydown with specified key and the \'.stop\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{ count: 0 }">
-                <article x-on:keydown="count++">
-                    <input type="text" x-on:keydown.enter.stop>
+            <div hx-data="{ count: 0 }">
+                <article hx-on:keydown="count++">
+                    <input type="text" hx-on:keydown.enter.stop>
                 </article>
-                <span x-text="count"></span>
+                <span hx-text="count"></span>
             </div>
         `;
     
@@ -380,9 +380,9 @@ describe('x-on directive', () => {
 
     it('should support short syntax', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
+            <div hx-data="{ foo: 'bar' }">
                 <button @click="foo = 'baz'"></button>
-                <span x-text="foo"></span>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -403,9 +403,9 @@ describe('x-on directive', () => {
 
     it('should support event with colon', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <div x-on:my:event.document="foo = 'baz'"></div>
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <div hx-on:my:event.document="foo = 'baz'"></div>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -426,9 +426,9 @@ describe('x-on directive', () => {
 
     it('should bind to the proper event with the \'.join\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <div x-on:my-event.join.document="foo = 'baz'"></div>
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <div hx-on:my-event.join.document="foo = 'baz'"></div>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -449,9 +449,9 @@ describe('x-on directive', () => {
 
     it('should bind to the proper event with the \'.camel\' modifier', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <div x-on:my-event.camel.document="foo = 'baz'"></div>
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <div hx-on:my-event.camel.document="foo = 'baz'"></div>
+                <span hx-text="foo"></span>
             </div>
         `;
     

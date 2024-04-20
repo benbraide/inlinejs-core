@@ -15,7 +15,7 @@ export interface InsertCloneParams{
 const RelativeOffsetKey = 'cntrl_rel_off';
 
 export function InsertControlClone({ componentId, component, contextElement, parent, clone, relativeType, relative, copyLocals, processDirectives }: InsertCloneParams){
-    let resolvedComponent = (component || FindComponentById(componentId));
+    const resolvedComponent = (component || FindComponentById(componentId));
     if (!resolvedComponent || !parent){
         JournalError('Failed to resolve component.', 'InlineJS.InsertClone', contextElement);
         return;
@@ -49,7 +49,7 @@ export function InsertControlClone({ componentId, component, contextElement, par
     }
 
     if (copyLocals !== false){//Copy locals
-        let elementScope = resolvedComponent.CreateElementScope(clone);
+        const elementScope = resolvedComponent.CreateElementScope(clone);
         Object.entries(resolvedComponent.FindElementScope(contextElement)?.GetLocals() || {}).forEach(([key, value]) => elementScope?.SetLocal(key, value));
     }
 

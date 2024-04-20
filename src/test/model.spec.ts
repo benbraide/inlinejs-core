@@ -11,11 +11,11 @@ import { TextDirectiveHandlerCompact } from '../directive/flow/text';
 import { ModelDirectiveHandlerCompact } from '../directive/flow/model';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 
-describe('x-model directive', () => {
+describe('hx-model directive', () => {
     it('should have value binding when initialized', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <input x-model="foo">
+            <div hx-data="{ foo: 'bar' }">
+                <input hx-model="foo">
             </div>
         `;
     
@@ -31,9 +31,9 @@ describe('x-model directive', () => {
 
     it('should update value when updated via input event', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <input x-model="foo">
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <input hx-model="foo">
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -58,9 +58,9 @@ describe('x-model directive', () => {
 
     it('should reflect data changed elsewhere', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <input x-model="foo">
-                <button x-on:click="foo = 'baz'"></button>
+            <div hx-data="{ foo: 'bar' }">
+                <input hx-model="foo">
+                <button hx-on:click="foo = 'baz'"></button>
             </div>
         `;
     
@@ -82,8 +82,8 @@ describe('x-model directive', () => {
     it('should cast value to number if \'.number\' modifier is present', async () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ $config: { name: '${key}' }, foo: null }">
-                <input type="number" x-model.number="foo">
+            <div hx-data="{ $config: { name: '${key}' }, foo: null }">
+                <input type="number" hx-model.number="foo">
             </div>
         `;
     
@@ -102,9 +102,9 @@ describe('x-model directive', () => {
     it('should return original value if casting fails; numeric value if casting passes', async () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ $config: { name: '${key}' }, foo: 0, bar: '' }">
-                <input type="number" x-model.number="foo">
-                <input x-model.number="bar">
+            <div hx-data="{ $config: { name: '${key}' }, foo: 0, bar: '' }">
+                <input type="number" hx-model.number="foo">
+                <input hx-model.number="bar">
             </div>
         `;
     
@@ -144,9 +144,9 @@ describe('x-model directive', () => {
 
     it('should trim value if \'.trim\' modifier is present', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: '' }">
-                <input x-model.trim="foo">
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: '' }">
+                <input hx-model.trim="foo">
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -165,9 +165,9 @@ describe('x-model directive', () => {
 
     it('should update value when updated via changed event when \'.lazy\' modifier is present', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <input x-model.lazy="foo">
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <input hx-model.lazy="foo">
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -190,9 +190,9 @@ describe('x-model directive', () => {
 
     it('should bind checkbox value', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: true }">
-                <input type="checkbox" x-model="foo">
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: true }">
+                <input type="checkbox" hx-model="foo">
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -214,10 +214,10 @@ describe('x-model directive', () => {
 
     it('should bind checkbox value to array', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: ['bar'] }">
-                <input type="checkbox" x-model="foo" value="bar">
-                <input type="checkbox" x-model="foo" value="baz">
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: ['bar'] }">
+                <input type="checkbox" hx-model="foo" value="bar">
+                <input type="checkbox" hx-model="foo" value="baz">
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -244,11 +244,11 @@ describe('x-model directive', () => {
 
     it('should support the \'.number\' modifier when binding checkbox value to array', async () => {
         document.body.innerHTML = `
-            <div x-data="{ selected: [2] }">
-                <input type="checkbox" value="1" x-model.number="selected">
-                <input type="checkbox" value="2" x-model.number="selected">
-                <input type="checkbox" value="3" x-model.number="selected">
-                <span x-text="selected"></span>
+            <div hx-data="{ selected: [2] }">
+                <input type="checkbox" value="1" hx-model.number="selected">
+                <input type="checkbox" value="2" hx-model.number="selected">
+                <input type="checkbox" value="3" hx-model.number="selected">
+                <span hx-text="selected"></span>
             </div>
         `;
     
@@ -281,10 +281,10 @@ describe('x-model directive', () => {
 
     it('should bind radio value', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <input type="radio" x-model="foo" value="bar">
-                <input type="radio" x-model="foo" value="baz">
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <input type="radio" hx-model="foo" value="bar">
+                <input type="radio" hx-model="foo" value="baz">
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -311,13 +311,13 @@ describe('x-model directive', () => {
 
     it('should bind select dropdown', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <select x-model="foo">
+            <div hx-data="{ foo: 'bar' }">
+                <select hx-model="foo">
                     <option disabled value="">Please select one</option>
                     <option>bar</option>
                     <option>baz</option>
                 </select>
-                <span x-text="foo"></span>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -346,13 +346,13 @@ describe('x-model directive', () => {
 
     it('should bind multiple select dropdown', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: ['bar'] }">
-                <select x-model="foo" multiple>
+            <div hx-data="{ foo: ['bar'] }">
+                <select hx-model="foo" multiple>
                     <option disabled value="">Please select one</option>
                     <option value="bar">bar</option>
                     <option value="baz">baz</option>
                 </select>
-                <span x-text="foo"></span>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -381,9 +381,9 @@ describe('x-model directive', () => {
 
     it('should bind nested keys', async () => {
         document.body.innerHTML = `
-            <div x-data="{ some: { nested: { key: 'foo' } } }">
-                <input type="text" x-model="some.nested.key">
-                <span x-text="some.nested.key"></span>
+            <div hx-data="{ some: { nested: { key: 'foo' } } }">
+                <input type="text" hx-model="some.nested.key">
+                <span hx-text="some.nested.key"></span>
             </div>
         `;
     
@@ -408,9 +408,9 @@ describe('x-model directive', () => {
 
     it('should convert undefined nested model key to empty string by default', async () => {
         document.body.innerHTML = `
-            <div x-data="{ some: { nested: {} } }">
-                <input type="text" x-model="some.nested.key">
-                <span x-text="some.nested.key"></span>
+            <div hx-data="{ some: { nested: {} } }">
+                <input type="text" hx-model="some.nested.key">
+                <span hx-text="some.nested.key"></span>
             </div>
         `;
     
@@ -435,9 +435,9 @@ describe('x-model directive', () => {
 
     it('should bind color input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '#ff0000' }">
-                <input type="color" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '#ff0000' }">
+                <input type="color" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -462,9 +462,9 @@ describe('x-model directive', () => {
 
     it('should bind date input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '2020-07-10' }">
-                <input type="date" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '2020-07-10' }">
+                <input type="date" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -489,9 +489,9 @@ describe('x-model directive', () => {
 
     it('should bind datetime-local input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '2020-01-01T20:00' }">
-                <input type="datetime-local" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '2020-01-01T20:00' }">
+                <input type="datetime-local" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -516,9 +516,9 @@ describe('x-model directive', () => {
 
     it('should bind email input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: 'anon.legion@scope.ns' }">
-                <input type="email" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: 'anon.legion@scope.ns' }">
+                <input type="email" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -543,9 +543,9 @@ describe('x-model directive', () => {
 
     it('should bind month input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '2020-04' }">
-                <input type="month" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '2020-04' }">
+                <input type="month" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -570,9 +570,9 @@ describe('x-model directive', () => {
 
     it('should bind number input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '11' }">
-                <input type="number" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '11' }">
+                <input type="number" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -597,9 +597,9 @@ describe('x-model directive', () => {
 
     it('should bind password input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: 'SecretKey' }">
-                <input type="password" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: 'SecretKey' }">
+                <input type="password" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -624,9 +624,9 @@ describe('x-model directive', () => {
 
     it('should bind range input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '10' }">
-                <input type="range" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '10' }">
+                <input type="range" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -651,9 +651,9 @@ describe('x-model directive', () => {
 
     it('should bind search input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '' }">
-                <input type="search" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '' }">
+                <input type="search" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -678,9 +678,9 @@ describe('x-model directive', () => {
 
     it('should bind tel input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '+12345678901' }">
-                <input type="tel " x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '+12345678901' }">
+                <input type="tel " hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -705,9 +705,9 @@ describe('x-model directive', () => {
 
     it('should bind time input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '22:00' }">
-                <input type="time" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '22:00' }">
+                <input type="time" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -732,9 +732,9 @@ describe('x-model directive', () => {
 
     it('should bind week input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: '2020-W20' }">
-                <input type="week" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: '2020-W20' }">
+                <input type="week" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     
@@ -759,9 +759,9 @@ describe('x-model directive', () => {
 
     it('should bind url input', async () => {
         document.body.innerHTML = `
-            <div x-data="{ key: 'https://example.com' }">
-                <input type="url" x-model="key">
-                <span x-text="key"></span>
+            <div hx-data="{ key: 'https://example.com' }">
+                <input type="url" hx-model="key">
+                <span hx-text="key"></span>
             </div>
         `;
     

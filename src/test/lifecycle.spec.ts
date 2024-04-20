@@ -14,7 +14,7 @@ import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 import { StaticDirectiveHandlerCompact } from '../directive/reactive/static';
 
 describe('lifecycle', () => {
-    it('should execute \'x-uninit\' on element removal', async () => {
+    it('should execute \'hx-uninit\' on element removal', async () => {
         const runObservers = new Array<(changes: Array<any>) => void>();
 
         (global.MutationObserver as unknown) = class {
@@ -26,9 +26,9 @@ describe('lifecycle', () => {
         };
         
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-text="foo"></span>
-                <span x-uninit="foo = 'baz'"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-text="foo"></span>
+                <span hx-uninit="foo = 'baz'"></span>
             </div>
         `;
     
@@ -57,10 +57,10 @@ describe('lifecycle', () => {
         await waitFor(() => { expect(document.querySelectorAll('span')[0].textContent).equal('baz') });
     });
 
-    it('should execute \'x-post\' after all other directives and offspring directives are evaluated', async () => {
+    it('should execute \'hx-post\' after all other directives and offspring directives are evaluated', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }" x-post="foo = 'post'">
-                <span x-text="foo" x-static="foo = 'bar'"></span>
+            <div hx-data="{ foo: 'bar' }" hx-post="foo = 'post'">
+                <span hx-text="foo" hx-static="foo = 'bar'"></span>
             </div>
         `;
 
@@ -76,10 +76,10 @@ describe('lifecycle', () => {
         await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('post') });
     });
 
-    it('should execute \'x-post\' after offspring x-post directives are evaluated', async () => {
+    it('should execute \'hx-post\' after offspring hx-post directives are evaluated', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }" x-post="foo = 'post'">
-                <span x-text="foo" x-post="foo = 'bar'"></span>
+            <div hx-data="{ foo: 'bar' }" hx-post="foo = 'post'">
+                <span hx-text="foo" hx-post="foo = 'bar'"></span>
             </div>
         `;
 
@@ -106,8 +106,8 @@ describe('lifecycle', () => {
         };
         
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -124,8 +124,8 @@ describe('lifecycle', () => {
 
         let tmpl = document.createElement('template');
         tmpl.innerHTML = `
-            <span x-static="foo = 'baz'"></span>
-            <button x-on:click="foo = 'clicked'"></button>
+            <span hx-static="foo = 'baz'"></span>
+            <button hx-on:click="foo = 'clicked'"></button>
         `;
 
         let newEls = Array.from(tmpl.content.children).map(child => child.cloneNode(true));

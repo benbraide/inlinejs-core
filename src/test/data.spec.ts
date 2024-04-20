@@ -11,12 +11,12 @@ import { TextDirectiveHandlerCompact } from '../directive/flow/text';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 import { UnoptimizedMagicHandlerCompact } from '../magic/reactive/unoptimized';
 
-describe('x-data directive', () => {
+describe('hx-data directive', () => {
     it('should be reactive when manipulated on component object', async () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ $config: { name: '${key}' }, foo: 'bar' }">
-                <span x-text="foo"></span>
+            <div hx-data="{ $config: { name: '${key}' }, foo: 'bar' }">
+                <span hx-text="foo"></span>
             </div>
         `;
 
@@ -36,8 +36,8 @@ describe('x-data directive', () => {
 
     it('should have an optional attribute value', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <span x-text="'foo'"></span>
+            <div hx-data>
+                <span hx-text="'foo'"></span>
             </div>
         `;
 
@@ -53,8 +53,8 @@ describe('x-data directive', () => {
 
     it('can use \'this\'', () => {
         document.body.innerHTML = `
-            <div x-data="{ text: this.dataset.text }" data-text="test">
-              <span x-text="text"></span>
+            <div hx-data="{ text: this.dataset.text }" data-text="test">
+              <span hx-text="text"></span>
             </div>
         `;
 
@@ -70,9 +70,9 @@ describe('x-data directive', () => {
 
     it('should contain reactive functions', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar', getFoo() {return this.foo}}">
-                <span x-text="getFoo()"></span>
-                <button x-on:click="foo = 'baz'"></button>
+            <div hx-data="{ foo: 'bar', getFoo() {return this.foo}}">
+                <span hx-text="getFoo()"></span>
+                <button hx-on:click="foo = 'baz'"></button>
             </div>
         `;
 
@@ -93,14 +93,14 @@ describe('x-data directive', () => {
 
     it('can be nested as scopes', () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-              <span x-text="foo"></span>
-              <span x-text="$scope.foo"></span>
-              <div x-data="{ foo: 'baz', other: 'value' }">
-                <span x-text="foo"></span>
-                <span x-text="$scope.foo"></span>
-                <span x-text="$scope.other"></span>
-                <span x-text="$parent.foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+              <span hx-text="foo"></span>
+              <span hx-text="$scope.foo"></span>
+              <div hx-data="{ foo: 'baz', other: 'value' }">
+                <span hx-text="foo"></span>
+                <span hx-text="$scope.foo"></span>
+                <span hx-text="$scope.other"></span>
+                <span hx-text="$parent.foo"></span>
               </div>
             </div>
         `;
@@ -122,12 +122,12 @@ describe('x-data directive', () => {
 
     it('should contain reactive scopes', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-text="foo"></span>
-                <div x-data="{ foo: 'baz' }">
-                    <span x-text="foo"></span>
-                    <span x-text="$scope.foo"></span>
-                    <button x-on:click="$scope.foo = 'changed'"></button>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-text="foo"></span>
+                <div hx-data="{ foo: 'baz' }">
+                    <span hx-text="foo"></span>
+                    <span hx-text="$scope.foo"></span>
+                    <button hx-on:click="$scope.foo = 'changed'"></button>
                 </div>
             </div>
         `;
@@ -137,8 +137,6 @@ describe('x-data directive', () => {
         DataDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();
         OnDirectiveHandlerCompact();
-
-        debugger;
 
         BootstrapAndAttach();
 
@@ -157,10 +155,10 @@ describe('x-data directive', () => {
 
     it('should not nest and duplicate proxies when manipulating an array', async () => {
         document.body.innerHTML = `
-            <div x-data="{ list: [ {name: 'foo'}, {name: 'bar'} ] }">
-                <span x-text="$unoptimized(list[0].name)"></span>
-                <button x-on:click="list.sort((a, b) => (a.name > b.name) ? 1 : -1)"></button>
-                <h1 x-on:click="list.sort((a, b) => (a.name < b.name) ? 1 : -1)"></h1>
+            <div hx-data="{ list: [ {name: 'foo'}, {name: 'bar'} ] }">
+                <span hx-text="$unoptimized(list[0].name)"></span>
+                <button hx-on:click="list.sort((a, b) => (a.name > b.name) ? 1 : -1)"></button>
+                <h1 hx-on:click="list.sort((a, b) => (a.name < b.name) ? 1 : -1)"></h1>
             </div>
         `;
     
@@ -233,13 +231,15 @@ describe('x-data directive', () => {
         globalThis['refreshCount'] = 0;
     
         document.body.innerHTML = `
-            <div x-data="{ items: ['foo', 'bar'], qux: 'quux', test() {this.items; this.qux; return ++globalThis.refreshCount} }">
-                <span x-text="test()"></span>
-                <button x-on:click="(() => { items.push('baz'); qux = 'corge'; })()"></button>
+            <div hx-data="{ items: ['foo', 'bar'], qux: 'quux', test() {this.items; this.qux; return ++globalThis.refreshCount} }">
+                <span hx-text="test()"></span>
+                <button hx-on:click="(() => { items.push('baz'); qux = 'corge'; })()"></button>
             </div>
         `;
     
-        CreateGlobal();
+        CreateGlobal({
+            useGlobalWindow: true,
+        });
 
         DataDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();

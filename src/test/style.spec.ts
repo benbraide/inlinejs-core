@@ -10,11 +10,11 @@ import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { StyleDirectiveHandlerCompact } from '../directive/attr/style';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 
-describe('x-style directive', () => {
+describe('hx-style directive', () => {
     it('should set corresponding value on initialization', () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'block' }">
-                <span x-style:display="foo"></span>
+            <div hx-data="{ foo: 'block' }">
+                <span hx-style:display="foo"></span>
             </div>
         `;
     
@@ -30,9 +30,9 @@ describe('x-style directive', () => {
 
     it('should be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'block' }">
-                <span x-style:display="foo"></span>
-                <button x-on:click="foo = 'flex'"></button>
+            <div hx-data="{ foo: 'block' }">
+                <span hx-style:display="foo"></span>
+                <button hx-on:click="foo = 'flex'"></button>
             </div>
         `;
     
@@ -53,8 +53,8 @@ describe('x-style directive', () => {
 
     it('should accept a key-value map', () => {
         document.body.innerHTML = `
-            <div x-data="{ map: { display: 'block', width: '180px' } }">
-                <span x-style="map"></span>
+            <div hx-data="{ map: { display: 'block', width: '180px' } }">
+                <span hx-style="map"></span>
             </div>
         `;
     
@@ -71,9 +71,9 @@ describe('x-style directive', () => {
 
     it('should have reactive key-value map', async () => {
         document.body.innerHTML = `
-            <div x-data="{ map: { display: 'block', width: '180px' } }">
-                <span x-style="map"></span>
-                <button x-on:click="map.width = '270px'"></button>
+            <div hx-data="{ map: { display: 'block', width: '180px' } }">
+                <span hx-style="map"></span>
+                <button hx-on:click="map.width = '270px'"></button>
             </div>
         `;
     
@@ -96,8 +96,8 @@ describe('x-style directive', () => {
 
     it('should format keys to camel casing', () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: '99' }">
-                <span x-style:z-index="foo"></span>
+            <div hx-data="{ foo: '99' }">
+                <span hx-style:z-index="foo"></span>
             </div>
         `;
     

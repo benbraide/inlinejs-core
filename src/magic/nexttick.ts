@@ -10,11 +10,11 @@ import {
 } from "@benbraide/inlinejs";
 
 export function AddNextTickHandler({ componentId, contextElement }: IMagicHandlerParams, callback: (scope: any) => void){
-    let contexts = {}, { context } = (FindComponentById(componentId)?.GetBackend() || {});
+    const contexts = {}, { context } = (FindComponentById(componentId)?.GetBackend() || {});
     context?.GetRecordKeys().forEach(key => (contexts[key] = context?.Peek(key)));
     
     FindComponentById(componentId)?.GetBackend().changes.AddNextTickHandler(() => {
-        let component = FindComponentById(componentId), { context = null, changes = null } = (component?.GetBackend() || {});
+        const component = FindComponentById(componentId), { context = null, changes = null } = (component?.GetBackend() || {});
 
         context?.Push(ContextKeys.self, contextElement);
         changes?.ResetLastAccessContext();

@@ -5,8 +5,8 @@ export const ComponentDirectiveHandler = CreateDirectiveHandlerCallback('compone
         return;
     }
     
-    let updateName = (name: string) => {
-        let resolvedComponent = FindComponentById(componentId);
+    const updateName = (name: string) => {
+        const resolvedComponent = FindComponentById(componentId);
         if (resolvedComponent && resolvedComponent.GetRoot() === contextElement){
             resolvedComponent.SetName(name);
             resolvedComponent.FindElementScope(contextElement)?.SetLocal('$name', name);

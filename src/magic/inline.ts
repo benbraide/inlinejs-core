@@ -1,4 +1,13 @@
-import { AddMagicHandler, CreateMagicHandlerCallback, RandomString } from "@benbraide/inlinejs";
+import {
+    AddMagicHandler,
+    BuildGetterProxyOptions,
+    CreateInplaceProxy,
+    CreateMagicHandlerCallback,
+    RandomString,
+    ToCamelCase,
+    ToSnakeCase,
+    ToString,
+} from "@benbraide/inlinejs";
 
 export const InlineJSMagicHandler = CreateMagicHandlerCallback('inlinejs', () => (globalThis['InlineJS'] || null));
 
@@ -10,9 +19,20 @@ export const InlineJSValuesMagicHandler = CreateMagicHandlerCallback('values', (
 
 export const InlineJSVersionMagicHandler = CreateMagicHandlerCallback('version', () => ((globalThis['InlineJS'] && globalThis['InlineJS']['version']) || null));
 
-export const InlineJSRandomMagicHandler = CreateMagicHandlerCallback('randstr', () => {
-    return (length = 9) => RandomString(length);
-});
+const strProps = {
+    convert: (value: any) => ToString(value),
+    camelCase: (value: string, ucfirst?: boolean, separator?: string) => ToCamelCase(value, ucfirst, separator),
+    snakeCase: (value: string, separator?: string) => ToSnakeCase(value, separator),
+    random: (length = 9) => RandomString(length),
+    slug: (value: string) => (value || '').replace(/[^a-z0-9\s-]/gi, '').replace(/\s+/g, '-').toLowerCase(),
+};
+
+let strProxy: object | null = null;
+
+export const InlineJSStrMagicHandler = CreateMagicHandlerCallback('str', () => strProxy = strProxy || CreateInplaceProxy(BuildGetterProxyOptions({
+    getter: prop => ((prop && strProps.hasOwnProperty(prop)) ? strProps[prop]() : undefined),
+    lookup: Object.keys(strProps),
+})));
 
 export function InlineJSMagicHandlerCompact(){
     AddMagicHandler(InlineJSMagicHandler);
@@ -20,5 +40,5 @@ export function InlineJSMagicHandlerCompact(){
     AddMagicHandler(InlineJSUtilitiesMagicHandler);
     AddMagicHandler(InlineJSValuesMagicHandler);
     AddMagicHandler(InlineJSVersionMagicHandler);
-    AddMagicHandler(InlineJSRandomMagicHandler);
+    AddMagicHandler(InlineJSStrMagicHandler);
 }

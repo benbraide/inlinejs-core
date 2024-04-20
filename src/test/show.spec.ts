@@ -10,12 +10,12 @@ import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { ShowDirectiveHandlerCompact } from '../directive/show';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 
-describe('x-show directive', () => {
+describe('hx-show directive', () => {
     it('should toggle display: none; with no other style attributes', async () => {
         document.body.innerHTML = `
-            <div x-data="{ show: true }">
-                <span x-show="show"></span>
-                <button x-on:click="show = ! show"></button>
+            <div hx-data="{ show: true }">
+                <span hx-show="show"></span>
+                <button hx-on:click="show = ! show"></button>
             </div>
         `;
     
@@ -40,9 +40,9 @@ describe('x-show directive', () => {
 
     it('should toggle display: none; with other style attributes', async () => {
         document.body.innerHTML = `
-            <div x-data="{ show: true }">
-                <span x-show="show" style="color: blue;"></span>
-                <button x-on:click="show = ! show"></button>
+            <div hx-data="{ show: true }">
+                <span hx-show="show" style="color: blue;"></span>
+                <button hx-on:click="show = ! show"></button>
             </div>
         `;
     

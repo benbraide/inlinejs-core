@@ -10,7 +10,7 @@ import {
 } from "@benbraide/inlinejs";
 
 export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ componentId, component, contextElement, expression, argOptions }) => {
-    let evaluate = EvaluateLater({ componentId, contextElement, expression }), options = ResolveOptions({
+    const evaluate = EvaluateLater({ componentId, contextElement, expression }), options = ResolveOptions({
         options: {
             lazy: false,
             number: false,
@@ -22,23 +22,24 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
         list: argOptions,
     });
 
-    let transformData = (data: any) => {
+    const transformData = (data: any) => {
         let transformed = (options.number ? parseFloat(ToString(data)) : null);
         return ((transformed || transformed === 0) ? transformed : ((options.number && options.forced) ? 0 : (options.trim ? ToString(data).trim() : data)));
     };
 
-    let evaluateAssignment = (value: any) => {
+    const evaluateAssignment = (value: any) => {
         EvaluateLater({ componentId, contextElement,
             expression: `(${expression}) = (${value})`,
         })();
     };
 
-    let getValueExpr = () => 'this.value ? this.value.trim() : \'\'';
+    const getValueExpr = () => 'this.value ? this.value.trim() : \'\'';
 
-    let isRadio = (contextElement instanceof HTMLInputElement && contextElement.type === 'radio');
-    let isCheckable = (isRadio || (contextElement instanceof HTMLInputElement && contextElement.type === 'checkbox'));
+    const isRadio = (contextElement instanceof HTMLInputElement && contextElement.type === 'radio');
+    const isCheckable = (isRadio || (contextElement instanceof HTMLInputElement && contextElement.type === 'checkbox'));
 
-    let ref: any = null, hotValue = false, assign = () => {
+    let ref: any = null, hotValue = false;
+    const assign = () => {
         if (isRadio){
             let transformed = transformData((contextElement as HTMLInputElement).value);
             evaluateAssignment((contextElement as HTMLInputElement).checked ? ((typeof transformed === 'number') ? transformed : getValueExpr()) : '');
@@ -73,7 +74,7 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
         }
     };
 
-    let putValue = (value: any) => {
+    const putValue = (value: any) => {
         if (hotValue){//Ignore changes
             return;
         }
@@ -102,7 +103,8 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
         }
     };
     
-    let checkpoint = 0, event = ((options.lazy || isCheckable || contextElement instanceof HTMLSelectElement) ? 'change' : 'input'), onEvent = () => {
+    let checkpoint = 0;
+    const event = ((options.lazy || isCheckable || contextElement instanceof HTMLSelectElement) ? 'change' : 'input'), onEvent = () => {
         if (options.debounce >= 0){//Debounce for specified duration
             let myCheckpoint = ++checkpoint;
             setTimeout(() => ((myCheckpoint == checkpoint) && handleEvent()), (options.debounce || 250));
@@ -112,7 +114,7 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
         }
     };
 
-    let handleEvent = () => {
+    const handleEvent = () => {
         assign();
         if (!hotValue){//Prevent infinite update cycles
             hotValue = true;

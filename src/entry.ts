@@ -1,6 +1,7 @@
 import { GetGlobal, WaitForGlobal } from '@benbraide/inlinejs';
 
-import { CodeConcept } from './concept/code';
+import { CodeConcept } from './concepts/code';
+import { ResourceConcept } from './concepts/resource';
 
 import { DataDirectiveHandlerCompact } from './directive/data/data';
 import { ComponentDirectiveHandlerCompact } from './directive/data/component';
@@ -44,6 +45,7 @@ import { ScopeMagicHandlerCompact } from './magic/data/scope';
 import { ProxyMagicHandlerCompact } from './magic/data/proxy';
 import { NativeMagicHandlerCompact } from './magic/data/native';
 import { StoreMagicHandlerCompact } from './magic/data/store';
+import { ResourceMagicHandlerCompact } from './magic/data/resource';
 
 import { StaticMagicHandlerCompact } from './magic/reactive/static';
 import { UnoptimizedMagicHandlerCompact } from './magic/reactive/unoptimized';
@@ -70,6 +72,7 @@ import { WaitingMagicHandlerCompact } from './magic/waiting';
 export function InlineJSCore(){
     WaitForGlobal().then(() => {
         GetGlobal().SetConcept('code', new CodeConcept);
+        GetGlobal().SetConcept('resource', new ResourceConcept());
         
         DataDirectiveHandlerCompact();
         ComponentDirectiveHandlerCompact();
@@ -113,6 +116,7 @@ export function InlineJSCore(){
         ProxyMagicHandlerCompact();
         NativeMagicHandlerCompact();
         StoreMagicHandlerCompact();
+        ResourceMagicHandlerCompact();
 
         StaticMagicHandlerCompact();
         UnoptimizedMagicHandlerCompact();

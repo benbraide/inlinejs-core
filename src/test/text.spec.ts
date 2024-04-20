@@ -10,12 +10,12 @@ import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { TextDirectiveHandlerCompact } from '../directive/flow/text';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 
-describe('x-text directive', () => {
+describe('hx-text directive', () => {
     it('should set text content on init', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar', zoo: 'zar' }">
-                <span x-text="foo"></span>
-                <span x-text="zoo"></span>
+            <div hx-data="{ foo: 'bar', zoo: 'zar' }">
+                <span hx-text="foo"></span>
+                <span hx-text="zoo"></span>
             </div>
         `;
     
@@ -32,9 +32,9 @@ describe('x-text directive', () => {
 
     it('should be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <button x-on:click="foo = 'baz'"></button>
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <button hx-on:click="foo = 'baz'"></button>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -59,12 +59,14 @@ describe('x-text directive', () => {
         };
         
         document.body.innerHTML = `
-            <div x-data>
-                <span x-text="globalThis.asyncCall()"></span>
+            <div hx-data>
+                <span hx-text="globalThis.asyncCall()"></span>
             </div>
         `;
     
-        CreateGlobal();
+        CreateGlobal({
+            useGlobalWindow: true,
+        });
 
         DataDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();

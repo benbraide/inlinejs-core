@@ -5,7 +5,7 @@ import { InsertControlClone } from "./insert";
 
 export function CreateSelectionDirectiveHandler(isElse: boolean){
     return CreateDirectiveHandlerCallback((isElse ? 'else' : 'if'), ({ componentId, component, contextElement, expression, ...rest }) => {
-        let resolvedComponent = (component || FindComponentById(componentId)), selectionScopeStackEntry = resolvedComponent?.PeekSelectionScope();
+        const resolvedComponent = (component || FindComponentById(componentId)), selectionScopeStackEntry = resolvedComponent?.PeekSelectionScope();
         if (isElse && (!selectionScopeStackEntry?.scope || !selectionScopeStackEntry?.set)){
             return JournalError('Missing matching \'if\' statement.', 'ElseDirectiveHandler', contextElement);
         }
@@ -22,14 +22,15 @@ export function CreateSelectionDirectiveHandler(isElse: boolean){
             init.effect = handler => handler(true);
         }
     
-        let clone: HTMLElement | null = null, insert = () => InsertControlClone({ componentId, contextElement,
+        let clone: HTMLElement | null = null;
+        const insert = () => InsertControlClone({ componentId, contextElement,
             parent: init!.parent,
             clone: (clone = init!.clone()),
             relativeType: 'before',
             relative: contextElement,
         });
     
-        let remove = () => {
+        const remove = () => {
             if (clone && clone.parentElement){//Remove from DOM and destroy scope on next tick
                 let cloneCopy: HTMLElement | null = clone;
     
@@ -95,7 +96,7 @@ export function CreateSelectionDirectiveHandler(isElse: boolean){
         }
 
         init!.effect((value) => {
-            let checkpoint = ++init!.checkpoint;
+            const checkpoint = ++init!.checkpoint;
             StreamData(value, (value) => {
                 if (checkpoint == init?.checkpoint){
                     effect(value);

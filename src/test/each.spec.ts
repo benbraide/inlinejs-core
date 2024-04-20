@@ -10,14 +10,36 @@ import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { EachDirectiveHandlerCompact } from '../directive/control/each';
 import { TextDirectiveHandlerCompact } from '../directive/flow/text';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
-import { UninitDirectiveHandlerCompact } from '../directive/lifecycle/uninit';
+import { StaticDirectiveHandlerCompact } from '../directive/reactive/static';
 
-describe('x-each directive', () => {
+describe('hx-each directive', () => {
     it('should work on arrays', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <template x-each="['foo', 'bar']">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+            <div hx-data>
+                <template hx-each="['foo', 'bar']">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+                </template>
+            </div>
+        `;
+    
+        CreateGlobal();
+
+        DataDirectiveHandlerCompact();
+        EachDirectiveHandlerCompact();
+        TextDirectiveHandlerCompact();
+
+        BootstrapAndAttach();
+    
+        expect(document.querySelectorAll('p').length).equal(2);
+        expect(document.querySelectorAll('p')[0].textContent).equal('0.foo.2');
+        expect(document.querySelectorAll('p')[1].textContent).equal('1.bar.2');
+    });
+
+    it('alternative syntax should work on arrays', () => {
+        document.body.innerHTML = `
+            <div hx-data>
+                <template hx-for="['foo', 'bar']">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
                 </template>
             </div>
         `;
@@ -37,9 +59,31 @@ describe('x-each directive', () => {
 
     it('should support the \'as <name>\' syntax on arrays', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <template x-each="['foo', 'bar'] as item">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${item}.\${$each.count}\`"></p>
+            <div hx-data>
+                <template hx-each="['foo', 'bar'] as item">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${item}.\${$each.count}\`"></p>
+                </template>
+            </div>
+        `;
+    
+        CreateGlobal();
+
+        DataDirectiveHandlerCompact();
+        EachDirectiveHandlerCompact();
+        TextDirectiveHandlerCompact();
+
+        BootstrapAndAttach();
+    
+        expect(document.querySelectorAll('p').length).equal(2);
+        expect(document.querySelectorAll('p')[0].textContent).equal('0.foo.foo.2');
+        expect(document.querySelectorAll('p')[1].textContent).equal('1.bar.bar.2');
+    });
+
+    it('alternative syntax should support the \'<name> of\' syntax on arrays', () => {
+        document.body.innerHTML = `
+            <div hx-data>
+                <template hx-for="item of ['foo', 'bar']">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${item}.\${$each.count}\`"></p>
                 </template>
             </div>
         `;
@@ -59,9 +103,31 @@ describe('x-each directive', () => {
 
     it('should support the \'as <key> => <name>\' syntax on arrays', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <template x-each="['foo', 'bar'] as key => item">
-                    <p x-text="\`\${$each.index}.\${key}.\${$each.value}.\${item}.\${$each.count}\`"></p>
+            <div hx-data>
+                <template hx-each="['foo', 'bar'] as key => item">
+                    <p hx-text="\`\${$each.index}.\${key}.\${$each.value}.\${item}.\${$each.count}\`"></p>
+                </template>
+            </div>
+        `;
+    
+        CreateGlobal();
+
+        DataDirectiveHandlerCompact();
+        EachDirectiveHandlerCompact();
+        TextDirectiveHandlerCompact();
+
+        BootstrapAndAttach();
+    
+        expect(document.querySelectorAll('p').length).equal(2);
+        expect(document.querySelectorAll('p')[0].textContent).equal('0.0.foo.foo.2');
+        expect(document.querySelectorAll('p')[1].textContent).equal('1.1.bar.bar.2');
+    });
+
+    it('alternative syntax should support the \'(<key>, <name>) of\' syntax on arrays', () => {
+        document.body.innerHTML = `
+            <div hx-data>
+                <template hx-for="(key, item) of ['foo', 'bar']">
+                    <p hx-text="\`\${$each.index}.\${key}.\${$each.value}.\${item}.\${$each.count}\`"></p>
                 </template>
             </div>
         `;
@@ -81,9 +147,9 @@ describe('x-each directive', () => {
 
     it('should work on arrays of objects', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <template x-each="[{ name: 'Anon', age: 27 }, { name: 'Legion', age: 99 }] as item">
-                    <p x-text="\`\${item.name}.\${item.age}\`"></p>
+            <div hx-data>
+                <template hx-each="[{ name: 'Anon', age: 27 }, { name: 'Legion', age: 99 }] as item">
+                    <p hx-text="\`\${item.name}.\${item.age}\`"></p>
                 </template>
             </div>
         `;
@@ -103,11 +169,11 @@ describe('x-each directive', () => {
 
     it('should be reactive when array is replaced', async () => {
         document.body.innerHTML = `
-            <div x-data="{ list: ['foo'] }">
-                <template x-each="list">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+            <div hx-data="{ list: ['foo'] }">
+                <template hx-each="list">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
                 </template>
-                <button x-on:click="list = ['foo', 'bar']"></button>
+                <button hx-on:click="list = ['foo', 'bar']"></button>
             </div>
         `;
     
@@ -117,6 +183,8 @@ describe('x-each directive', () => {
         EachDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();
         OnDirectiveHandlerCompact();
+
+        debugger;
 
         BootstrapAndAttach();
     
@@ -134,13 +202,13 @@ describe('x-each directive', () => {
 
     it('should be reactive when array is manipulated', async () => {
         document.body.innerHTML = `
-            <div x-data="{ list: ['foo'] }">
-                <template x-each="list">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+            <div hx-data="{ list: ['foo'] }">
+                <template hx-each="list">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
                 </template>
-                <button x-on:click="list.push('bar')"></button>
-                <button x-on:click="list.unshift('first')"></button>
-                <button x-on:click="list.splice(1, 1)"></button>
+                <button hx-on:click="list.push('bar')"></button>
+                <button hx-on:click="list.unshift('first')"></button>
+                <button hx-on:click="list.splice(1, 1)"></button>
             </div>
         `;
     
@@ -184,11 +252,11 @@ describe('x-each directive', () => {
 
     it('should support the \'as <name>\' syntax and be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ list: ['foo'] }">
-                <template x-each="list as item">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${item}.\${$each.count}\`"></p>
+            <div hx-data="{ list: ['foo'] }">
+                <template hx-each="list as item">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${item}.\${$each.count}\`"></p>
                 </template>
-                <button x-on:click="list = ['foo', 'bar']"></button>
+                <button hx-on:click="list = ['foo', 'bar']"></button>
             </div>
         `;
     
@@ -215,11 +283,11 @@ describe('x-each directive', () => {
 
     it('should remove all elements when array is empty', async () => {
         document.body.innerHTML = `
-            <div x-data="{ list: ['foo'] }">
-                <template x-each="list">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+            <div hx-data="{ list: ['foo'] }">
+                <template hx-each="list">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
                 </template>
-                <button x-on:click="list = []"></button>
+                <button hx-on:click="list = []"></button>
             </div>
         `;
     
@@ -241,33 +309,40 @@ describe('x-each directive', () => {
     });
 
     it('should optimize the creation of new nodes when coupled with a key', async () => {
+        globalThis['keyedPs'] = [];
+        globalThis['unkeyedPs'] = [];
+        
         document.body.innerHTML = `
-            <div x-data="{ list: ['foo'], uninitCount: 0 }">
-                <template x-each="list as index => item" :key="index">
-                    <p x-text="item + '.' + $each.count" x-uninit="uninitCount += 1"></p>
+            <div hx-data="{ list: ['foo'], uninitCount: 0 }">
+                <template hx-each="list as index => item" :key="index">
+                    <p hx-text="item + '.' + $each.count" hx-static="!globalThis.keyedPs.includes(this) && globalThis.keyedPs.push(this)"></p>
                 </template>
-                <template x-each="list as item">
-                    <p x-text="item" x-uninit="uninitCount += 1"></p>
+                <template hx-each="list as item">
+                    <p hx-text="item" hx-static="!globalThis.unkeyedPs.includes(this) && globalThis.unkeyedPs.push(this)"></p>
                 </template>
-                <button x-on:click="list = ['foo', 'bar']"></button>
-                <span x-text="uninitCount"></span>
+                <button hx-on:click="list = ['foo', 'bar']"></button>
+                <span hx-text="uninitCount"></span>
             </div>
         `;
     
-        CreateGlobal();
+        CreateGlobal({
+            useGlobalWindow: true,
+        });
 
         DataDirectiveHandlerCompact();
         EachDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();
         OnDirectiveHandlerCompact();
-        UninitDirectiveHandlerCompact();
+        StaticDirectiveHandlerCompact();
 
         BootstrapAndAttach();
     
         expect(document.querySelectorAll('p').length).equal(2);
         expect(document.querySelectorAll('p')[0].textContent).equal('foo.1');
         expect(document.querySelectorAll('p')[1].textContent).equal('foo');
-        expect(document.querySelectorAll('span')[0].textContent).equal('0');
+
+        expect(globalThis.keyedPs.length).equal(1);
+        expect(globalThis.unkeyedPs.length).equal(1);
         
         userEvent.click(document.querySelector('button')!);
         
@@ -277,15 +352,17 @@ describe('x-each directive', () => {
             expect(document.querySelectorAll('p')[1].textContent).equal('bar.2');
             expect(document.querySelectorAll('p')[2].textContent).equal('foo');
             expect(document.querySelectorAll('p')[3].textContent).equal('bar');
-            expect(document.querySelectorAll('span')[0].textContent).equal('1');
+
+            expect(globalThis.keyedPs.length).equal(2);
+            expect(globalThis.unkeyedPs.length).equal(3);
         });
     });
 
     it('should work on positive integer ranges', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <template x-each="3">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+            <div hx-data>
+                <template hx-each="3">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
                 </template>
             </div>
         `;
@@ -306,11 +383,11 @@ describe('x-each directive', () => {
 
     it('should work on positive integer ranges and be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ value: 3 }">
-                <template x-each="value">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+            <div hx-data="{ value: 3 }">
+                <template hx-each="value">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
                 </template>
-                <button x-on:click="value = 5"></button>
+                <button hx-on:click="value = 5"></button>
             </div>
         `;
     
@@ -342,9 +419,9 @@ describe('x-each directive', () => {
 
     it('should work on negative integer ranges', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <template x-each="-3">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+            <div hx-data>
+                <template hx-each="-3">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
                 </template>
             </div>
         `;
@@ -365,11 +442,11 @@ describe('x-each directive', () => {
 
     it('should work on negative integer ranges and be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ value: -3 }">
-                <template x-each="value">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+            <div hx-data="{ value: -3 }">
+                <template hx-each="value">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
                 </template>
-                <button x-on:click="value = -5"></button>
+                <button hx-on:click="value = -5"></button>
             </div>
         `;
     
@@ -401,9 +478,9 @@ describe('x-each directive', () => {
 
     it('should work on key-value pairs', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <template x-each="{ name: 'John Doe', age: 36, gender: 'MALE' }">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
+            <div hx-data>
+                <template hx-each="{ name: 'John Doe', age: 36, gender: 'MALE' }">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></p>
                 </template>
             </div>
         `;
@@ -424,9 +501,9 @@ describe('x-each directive', () => {
 
     it('should support the \'as <name>\' syntax on key-value pairs', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <template x-each="{ name: 'John Doe', age: 36, gender: 'MALE' } as item">
-                    <p x-text="\`\${$each.index}.\${$each.value}.\${item}.\${$each.count}\`"></p>
+            <div hx-data>
+                <template hx-each="{ name: 'John Doe', age: 36, gender: 'MALE' } as item">
+                    <p hx-text="\`\${$each.index}.\${$each.value}.\${item}.\${$each.count}\`"></p>
                 </template>
             </div>
         `;
@@ -447,12 +524,12 @@ describe('x-each directive', () => {
 
     it('should contain reactive elements', async () => {
         document.body.innerHTML = `
-            <div x-data="{ items: ['first'], foo: 'bar' }">
-                <button x-on:click="foo = 'baz'"></button>
-                <template x-each="items">
+            <div hx-data="{ items: ['first'], foo: 'bar' }">
+                <button hx-on:click="foo = 'baz'"></button>
+                <template hx-each="items">
                     <section>
-                        <h1 x-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></h1>
-                        <h2 x-text="foo"></h2>
+                        <h1 hx-text="\`\${$each.index}.\${$each.value}.\${$each.count}\`"></h1>
+                        <h2 hx-text="foo"></h2>
                     </section>
                 </template>
             </div>
@@ -481,11 +558,11 @@ describe('x-each directive', () => {
 
     it('can be nested', async () => {
         document.body.innerHTML = `
-            <div x-data="{ $enableOptimizedBinds: false, foos: [ { bars: ['bob', 'lob'] } ] }">
-                <button x-on:click="foos = [ { bars: ['bob', 'lob'] }, { bars: ['law'] } ]"></button>
-                <template x-each="foos">
-                    <template x-each="$each.value.bars">
-                        <span x-text="$each.value"></span>
+            <div hx-data="{ $enableOptimizedBinds: false, foos: [ { bars: ['bob', 'lob'] } ] }">
+                <button hx-on:click="foos = [ { bars: ['bob', 'lob'] }, { bars: ['law'] } ]"></button>
+                <template hx-each="foos">
+                    <template hx-each="$each.value.bars">
+                        <span hx-text="$each.value"></span>
                     </template>
                 </template>
             </div>
@@ -516,10 +593,10 @@ describe('x-each directive', () => {
 
     it('should be able to access parent data when nested', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foos: [ {name: 'foo', bars: ['bob', 'lob']}, {name: 'baz', bars: ['bab', 'lab']} ] }">
-                <template x-each="foos">
-                    <template x-each="$each.value.bars">
-                        <span x-text="$each.parent.value.name+': '+$each.value"></span>
+            <div hx-data="{ foos: [ {name: 'foo', bars: ['bob', 'lob']}, {name: 'baz', bars: ['bab', 'lab']} ] }">
+                <template hx-each="foos">
+                    <template hx-each="$each.value.bars">
+                        <span hx-text="$each.parent.value.name+': '+$each.value"></span>
                     </template>
                 </template>
             </div>
@@ -543,10 +620,10 @@ describe('x-each directive', () => {
 
     it('should support the \'as <name>\' syntax and be able to access parent data when nested', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foos: [ {name: 'foo', bars: ['bob', 'lob']}, {name: 'baz', bars: ['bab', 'lab']} ] }">
-                <template x-each="foos as foo">
-                    <template x-each="foo.bars as bar">
-                        <span x-text="foo.name+': '+bar"></span>
+            <div hx-data="{ foos: [ {name: 'foo', bars: ['bob', 'lob']}, {name: 'baz', bars: ['bab', 'lab']} ] }">
+                <template hx-each="foos as foo">
+                    <template hx-each="foo.bars as bar">
+                        <span hx-text="foo.name+': '+bar"></span>
                     </template>
                 </template>
             </div>
@@ -572,19 +649,21 @@ describe('x-each directive', () => {
         document['_alerts'] = [];
     
         document.body.innerHTML = `
-            <div x-data="{ foos: [
+            <div hx-data="{ foos: [
                 {name: 'foo', bars: [{name: 'bob', count: 0}, {name: 'lob', count: 0}]},
                 {name: 'baz', bars: [{name: 'bab', count: 0}, {name: 'lab', count: 0}]}
             ], fnText: function(foo, bar) { return foo.name+': '+bar.name+' = '+bar.count; }, onClick: function(foo, bar){ bar.count += 1; document._alerts.push(this.fnText(foo, bar)) } }">
-                <template x-each="foos">
-                    <template x-each="$each.value.bars">
-                        <span x-text="fnText($each.parent.value, $each.value)" x-on:click="onClick($each.parent.value, $each.value)" ></span>
+                <template hx-each="foos">
+                    <template hx-each="$each.value.bars">
+                        <span hx-text="fnText($each.parent.value, $each.value)" hx-on:click="onClick($each.parent.value, $each.value)" ></span>
                     </template>
                 </template>
             </div>
         `;
     
-        CreateGlobal();
+        CreateGlobal({
+            useGlobalWindow: true,
+        });
 
         DataDirectiveHandlerCompact();
         EachDirectiveHandlerCompact();
@@ -646,19 +725,21 @@ describe('x-each directive', () => {
         document['_alerts'] = [];
     
         document.body.innerHTML = `
-            <div x-data="{ foos: [
+            <div hx-data="{ foos: [
                 {name: 'foo', bars: [{name: 'bob', count: 0}, {name: 'lob', count: 0}]},
                 {name: 'baz', bars: [{name: 'bab', count: 0}, {name: 'lab', count: 0}]}
             ], fnText: function(foo, bar) { return foo.name+': '+bar.name+' = '+bar.count; }, onClick: function(foo, bar){ bar.count += 1; document._alerts.push(this.fnText(foo, bar)) } }">
-                <template x-each="foos as foo">
-                    <template x-each="foo.bars as bar">
-                        <span x-text="fnText(foo, bar)" x-on:click="onClick(foo, bar)" ></span>
+                <template hx-each="foos as foo">
+                    <template hx-each="foo.bars as bar">
+                        <span hx-text="fnText(foo, bar)" hx-on:click="onClick(foo, bar)" ></span>
                     </template>
                 </template>
             </div>
         `;
     
-        CreateGlobal();
+        CreateGlobal({
+            useGlobalWindow: true,
+        });
 
         DataDirectiveHandlerCompact();
         EachDirectiveHandlerCompact();

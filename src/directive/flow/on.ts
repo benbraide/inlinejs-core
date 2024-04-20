@@ -9,8 +9,10 @@ import {
     GetGlobal,
     ToCamelCase,
     ResolveOptions,
-    OnDirectiveExpansionRule
+    OnDirectiveExpansionRule,
+    GetGlobalScope
 } from "@benbraide/inlinejs";
+import { UseProxyAccessHandler } from "../control/each";
 
 const keyEvents = ['keydown', 'keyup'], mobileMap = {
     click: 'touchend',
@@ -20,7 +22,7 @@ const keyEvents = ['keydown', 'keyup'], mobileMap = {
 };
 
 function GetOptions(argKey: string, argOptions: Array<string>){
-    let options = {
+    const options = {
         outside: false,
         prevent: false,
         stop: false,
@@ -34,15 +36,16 @@ function GetOptions(argKey: string, argOptions: Array<string>){
         mobile: false,
         join: false,
         camel: false,
+        state: false,
         debounce: -1,
     };
     
-    let keyOptions = (keyEvents.includes(argKey) ? {
+    const keyOptions = (keyEvents.includes(argKey) ? {
         meta: false,
         alt: false,
         ctrl: false,
         shift: false,
-        list: new Array<string | Array<string>>(),
+        list: new Array<string>(),
     } : null);
 
     ResolveOptions({
@@ -51,13 +54,14 @@ function GetOptions(argKey: string, argOptions: Array<string>){
         defaultNumber: 250,
         unknownCallback: ({ option }) => {
             if (keyOptions && option){
-                let parts = ((option.length > 1) ? option.split('-') : []);
+                const parts = ((option.length > 1) ? option.split('-') : []);
                 if (parts.length == 2 && parts[0].length == 1 && parts[1].length == 1){//E.g. A-Z
-                    let fromCode = parts[0].charCodeAt(0), toCode = parts[1].charCodeAt(0);
-                    keyOptions.list.push(Array.from({ length: (toCode - fromCode) }).map((i, index) => String.fromCharCode(index + fromCode)));
+                    const fromCode = parts[0].charCodeAt(0), toCode = parts[1].charCodeAt(0);
+                    Array.from({ length: (toCode - fromCode) }).map((i, index) => String.fromCharCode(index + fromCode)).forEach(key => keyOptions.list.push(key));
                 }
                 else{
-                    keyOptions.list.push(GetGlobal().GetConfig().MapKeyEvent(ToCamelCase(option).toLowerCase()));
+                    const mapped = GetGlobal().GetConfig().MapKeyEvent(ToCamelCase(option).toLowerCase());
+                    (Array.isArray(mapped) ? mapped : [mapped]).forEach(key => keyOptions.list.push(key));
                 }
             }
         },
@@ -67,16 +71,24 @@ function GetOptions(argKey: string, argOptions: Array<string>){
 }
 
 export const OnDirectiveHandler = CreateDirectiveHandlerCallback('on', ({ componentId, component, contextElement, expression, argKey, argOptions }) => {
-    let evaluate = EvaluateLater({ componentId, contextElement, expression }), { keyOptions, options } = GetOptions(argKey, argOptions), checkpoint = 0;
-    let activeKeyOptions = Object.entries(keyOptions || {}).filter(([key, value]) => (value === true)).map(([key]) => key), onEvent = (e: Event) => {
+    let checkpoint = 0;
+    
+    const evaluate = EvaluateLater({ componentId, contextElement, expression }), { keyOptions, options } = GetOptions(argKey, argOptions);
+    const keyStates: Record<string, boolean> = (options.state ? GetGlobalScope('keyboardEventStates') : {});
+    
+    const activeKeyOptions = Object.entries(keyOptions || {}).filter(([key, value]) => (value === true)).map(([key]) => key), onEvent = (e: Event) => {
+        const isKeyboardEvent = (e instanceof KeyboardEvent), isKeyDown = (isKeyboardEvent && options.state && (e.type === 'keydown'));
+
+        isKeyboardEvent && options.state && (keyStates[(e.key || '').toLowerCase()] = isKeyDown);
+        
         if ((options.self && !options.outside && e.target !== contextElement) || activeKeyOptions.findIndex(opt => !e[`${opt}Key`]) != -1){
             return;//Event is debounced OR event target is not context element OR specified key option is not pressed
         }
 
-        if (keyOptions && keyOptions.list.length > 0){
-            let key = ((e as KeyboardEvent).key || '').toLowerCase();
-            if (keyOptions.list.findIndex(item => (Array.isArray(item) ? item.includes(key) : (item === key))) == -1){
-                return;//Key pressed doesn't match any specified
+        if (isKeyboardEvent){
+            const key = (e.key || '').toLowerCase();
+            if (keyOptions && keyOptions.list.length > 0 && keyOptions.list.findIndex(item => (isKeyDown ? !!keyStates[item] : (item === key))) == -1){
+                return;//Key pressed or released doesn't match any specified
             }
         }
 
@@ -89,7 +101,7 @@ export const OnDirectiveHandler = CreateDirectiveHandlerCallback('on', ({ compon
         }
 
         if (options.debounce >= 0){//Debounce for specified duration
-            let myCheckpoint = ++checkpoint;
+            const myCheckpoint = ++checkpoint;
             setTimeout(() => ((myCheckpoint == checkpoint) && handleEvent(e)), (options.debounce || 250));
         }
         else{
@@ -97,7 +109,7 @@ export const OnDirectiveHandler = CreateDirectiveHandlerCallback('on', ({ compon
         }
     };
 
-    let handleEvent = (e: Event) => {
+    const handleEvent = (e: Event) => {
         if (options.once){
             RemoveOutsideEventListener(contextElement, e.type, <any>onEvent);
         }
@@ -110,9 +122,15 @@ export const OnDirectiveHandler = CreateDirectiveHandlerCallback('on', ({ compon
         }
     };
 
-    let target = (options.window ? window : (options.document ? globalThis.document : contextElement)), doEvaluation = (e: Event) => evaluate(undefined, [e], {
-        event: e,
-    });
+    const currentProxyAccessHandler = (component || FindComponentById(componentId))?.GetProxyAccessHandler();
+
+    const target = (options.window ? window : (options.document ? globalThis.document : contextElement)), doEvaluation = (e: Event) => {
+        const executeEvaluation = () => evaluate(undefined, [e], {
+            event: e,
+        });
+
+        currentProxyAccessHandler ? UseProxyAccessHandler(componentId, (currentProxyAccessHandler), executeEvaluation) : executeEvaluation();
+    };
 
     if (options.join){
         argKey = argKey.split('-').join('.');
@@ -121,7 +139,7 @@ export const OnDirectiveHandler = CreateDirectiveHandlerCallback('on', ({ compon
         argKey = ToCamelCase(argKey);
     }
 
-    let mappedEvent = ((options.mobile && argKey in mobileMap) ? <string>mobileMap[argKey] : null);
+    const mappedEvent = ((options.mobile && argKey in mobileMap) ? <string>mobileMap[argKey] : null);
     if (options.outside && target === contextElement){
         AddOutsideEventListener(contextElement, argKey, <any>onEvent);
         if (mappedEvent){

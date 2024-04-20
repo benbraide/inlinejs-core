@@ -10,11 +10,11 @@ import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { BindDirectiveHandlerCompact } from '../directive/attr/bind';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 
-describe('x-bind directive', () => {
+describe('hx-bind directive', () => {
     it('should set corresponding value on initialization', () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-bind:foo="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-bind:foo="foo"></span>
             </div>
         `;
     
@@ -30,9 +30,9 @@ describe('x-bind directive', () => {
 
     it('should be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-bind:foo="foo"></span>
-                <button x-on:click="foo = 'baz'"></button>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-bind:foo="foo"></span>
+                <button hx-on:click="foo = 'baz'"></button>
             </div>
         `;
     
@@ -53,8 +53,8 @@ describe('x-bind directive', () => {
 
     it('should accept a key-value map', () => {
         document.body.innerHTML = `
-            <div x-data="{ map: { foo: 'bar', zoo: 'tiger' } }">
-                <span x-bind="map"></span>
+            <div hx-data="{ map: { foo: 'bar', zoo: 'tiger' } }">
+                <span hx-bind="map"></span>
             </div>
         `;
     
@@ -71,9 +71,9 @@ describe('x-bind directive', () => {
 
     it('should have reactive key-value map', async () => {
         document.body.innerHTML = `
-            <div x-data="{ map: { foo: 'bar', zoo: 'tiger' } }">
-                <span x-bind="map"></span>
-                <button x-on:click="map.zoo = 'leopard'"></button>
+            <div hx-data="{ map: { foo: 'bar', zoo: 'tiger' } }">
+                <span hx-bind="map"></span>
+                <button hx-on:click="map.zoo = 'leopard'"></button>
             </div>
         `;
     
@@ -96,9 +96,9 @@ describe('x-bind directive', () => {
 
     it('should accept the short form and be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
+            <div hx-data="{ foo: 'bar' }">
                 <span :foo="foo"></span>
-                <button x-on:click="foo = 'baz'"></button>
+                <button hx-on:click="foo = 'baz'"></button>
             </div>
         `;
     
@@ -119,13 +119,13 @@ describe('x-bind directive', () => {
 
     it('should remove non-boolean attributes with null/undefined/false values', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <a href="#hello" x-bind:href="null"></a>
-                <a href="#hello" x-bind:href="false"></a>
-                <a href="#hello" x-bind:href="undefined"></a>
-                <span visible="true" x-bind:visible="null"></span>
-                <span visible="true" x-bind:visible="false"></span>
-                <span visible="true" x-bind:visible="undefined"></span>
+            <div hx-data>
+                <a href="#hello" hx-bind:href="null"></a>
+                <a href="#hello" hx-bind:href="false"></a>
+                <a href="#hello" hx-bind:href="undefined"></a>
+                <span visible="true" hx-bind:visible="null"></span>
+                <span visible="true" hx-bind:visible="false"></span>
+                <span visible="true" hx-bind:visible="undefined"></span>
             </div>
         `;
         
@@ -146,8 +146,8 @@ describe('x-bind directive', () => {
 
     it('should not remove non-boolean attributes with empty string values', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <a href="#hello" x-bind:href="''"></a>
+            <div hx-data>
+                <a href="#hello" hx-bind:href="''"></a>
             </div>
         `;
 
@@ -163,36 +163,36 @@ describe('x-bind directive', () => {
 
     it('should set boolean attributes with truthy values to their attribute name', () => {
         document.body.innerHTML = `
-            <div x-data="{ isSet: true }">
-                <input x-bind:disabled="isSet"></input>
-                <input x-bind:checked="isSet"></input>
-                <input x-bind:required="isSet"></input>
-                <input x-bind:readonly="isSet"></input>
-                <details x-bind:open="isSet"></details>
-                <select x-bind:multiple="isSet">
-                    <option x-bind:selected="isSet"></option>
+            <div hx-data="{ isSet: true }">
+                <input hx-bind:disabled="isSet"></input>
+                <input hx-bind:checked="isSet"></input>
+                <input hx-bind:required="isSet"></input>
+                <input hx-bind:readonly="isSet"></input>
+                <details hx-bind:open="isSet"></details>
+                <select hx-bind:multiple="isSet">
+                    <option hx-bind:selected="isSet"></option>
                 </select>
-                <dl x-bind:itemscope="isSet"></dl>
-                <form x-bind:novalidate="isSet"></form>
+                <dl hx-bind:itemscope="isSet"></dl>
+                <form hx-bind:novalidate="isSet"></form>
                 <iframe
-                    x-bind:allowfullscreen="isSet"
-                    x-bind:allowpaymentrequest="isSet"
+                    hx-bind:allowfullscreen="isSet"
+                    hx-bind:allowpaymentrequest="isSet"
                 ></iframe>
-                <button x-bind:formnovalidate="isSet"></button>
+                <button hx-bind:formnovalidate="isSet"></button>
                 <audio
-                    x-bind:autoplay="isSet"
-                    x-bind:controls="isSet"
-                    x-bind:loop="isSet"
-                    x-bind:muted="isSet"
+                    hx-bind:autoplay="isSet"
+                    hx-bind:controls="isSet"
+                    hx-bind:loop="isSet"
+                    hx-bind:muted="isSet"
                 ></audio>
-                <video x-bind:playsinline="isSet"></video>
-                <track x-bind:default="isSet" />
-                <img x-bind:ismap="isSet" />
-                <ol x-bind:reversed="isSet"></ol>
+                <video hx-bind:playsinline="isSet"></video>
+                <track hx-bind:default="isSet" />
+                <img hx-bind:ismap="isSet" />
+                <ol hx-bind:reversed="isSet"></ol>
                 <script
-                    x-bind:async="isSet"
-                    x-bind:defer="isSet"
-                    x-bind:nomodule="isSet"
+                    hx-bind:async="isSet"
+                    hx-bind:defer="isSet"
+                    hx-bind:nomodule="isSet"
                 ></script>
             </div>
         `;
@@ -231,37 +231,37 @@ describe('x-bind directive', () => {
 
     it('should remove boolean attributes with falsy values', () => {
         document.body.innerHTML = `
-            <div x-data="{ isSet: false }">
-                <input x-bind:disabled="isSet"></input>
-                <input x-bind:checked="isSet"></input>
-                <input x-bind:required="isSet"></input>
-                <input x-bind:readonly="isSet"></input>
-                <input x-bind:hidden="isSet"></input>
-                <details x-bind:open="isSet"></details>
-                <select x-bind:multiple="isSet"></select>
-                <option x-bind:selected="isSet"></option>
-                <textarea x-bind:autofocus="isSet"></textarea>
-                <dl x-bind:itemscope="isSet"></dl>
-                <form x-bind:novalidate="isSet"></form>
+            <div hx-data="{ isSet: false }">
+                <input hx-bind:disabled="isSet"></input>
+                <input hx-bind:checked="isSet"></input>
+                <input hx-bind:required="isSet"></input>
+                <input hx-bind:readonly="isSet"></input>
+                <input hx-bind:hidden="isSet"></input>
+                <details hx-bind:open="isSet"></details>
+                <select hx-bind:multiple="isSet"></select>
+                <option hx-bind:selected="isSet"></option>
+                <textarea hx-bind:autofocus="isSet"></textarea>
+                <dl hx-bind:itemscope="isSet"></dl>
+                <form hx-bind:novalidate="isSet"></form>
                 <iframe
-                    x-bind:allowfullscreen="isSet"
-                    x-bind:allowpaymentrequest="isSet"
+                    hx-bind:allowfullscreen="isSet"
+                    hx-bind:allowpaymentrequest="isSet"
                 ></iframe>
-                <button x-bind:formnovalidate="isSet"></button>
+                <button hx-bind:formnovalidate="isSet"></button>
                 <audio
-                    x-bind:autoplay="isSet"
-                    x-bind:controls="isSet"
-                    x-bind:loop="isSet"
-                    x-bind:muted="isSet"
+                    hx-bind:autoplay="isSet"
+                    hx-bind:controls="isSet"
+                    hx-bind:loop="isSet"
+                    hx-bind:muted="isSet"
                 ></audio>
-                <video x-bind:playsinline="isSet"></video>
-                <track x-bind:default="isSet" />
-                <img x-bind:ismap="isSet" />
-                <ol x-bind:reversed="isSet"></ol>
+                <video hx-bind:playsinline="isSet"></video>
+                <track hx-bind:default="isSet" />
+                <img hx-bind:ismap="isSet" />
+                <ol hx-bind:reversed="isSet"></ol>
                 <script
-                    x-bind:async="isSet"
-                    x-bind:defer="isSet"
-                    x-bind:nomodule="isSet"
+                    hx-bind:async="isSet"
+                    hx-bind:defer="isSet"
+                    hx-bind:nomodule="isSet"
                 ></script>
             </div>
         `;
@@ -302,8 +302,8 @@ describe('x-bind directive', () => {
 
     it('\'.camel\' modifier correctly sets name of attribute', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <svg x-bind:view-box.camel="'0 0 42 42'"></svg>
+            <div hx-data>
+                <svg hx-bind:view-box.camel="'0 0 42 42'"></svg>
             </div>
         `;
     
@@ -319,8 +319,8 @@ describe('x-bind directive', () => {
 
     it('names can contain numbers', () => {
         document.body.innerHTML = `
-            <svg x-data>
-                <line x1="1" y1="2" :x2="3" x-bind:y2="4" />
+            <svg hx-data>
+                <line x1="1" y1="2" :x2="3" hx-bind:y2="4" />
             </svg>
         `;
     

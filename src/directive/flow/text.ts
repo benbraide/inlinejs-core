@@ -4,7 +4,7 @@ export const TextDirectiveHandler = CreateDirectiveHandlerCallback('text', ({ co
     let checkpoint = 0;
     LazyCheck({ contextElement, ...rest,
         callback: (value) => {
-            let myCheckpoint = ++checkpoint;
+            const myCheckpoint = ++checkpoint;
             StreamData(value, (value) => {
                 if (myCheckpoint == checkpoint){
                     contextElement.textContent = ToString(value);

@@ -6,7 +6,7 @@ export const LocalsDirectiveHandler = CreateDirectiveHandlerCallback('locals', (
     }
     
     EvaluateLater({ componentId, contextElement, expression })((data) => {
-        let elementScope = FindComponentById(componentId)?.FindElementScope(contextElement);
+        const elementScope = FindComponentById(componentId)?.FindElementScope(contextElement);
 
         data = GetTarget(data);
         data = ((IsObject(data) && data) || {});

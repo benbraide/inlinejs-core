@@ -13,11 +13,11 @@ import { TextDirectiveHandlerCompact } from '../directive/flow/text';
 import { EachDirectiveHandlerCompact } from '../directive/control/each';
 import { ElseDirectiveHandlerCompact } from '../directive/control/else';
 
-describe('x-if directive', () => {
+describe('hx-if directive', () => {
     it('should create element on truthy value', async () => {
         document.body.innerHTML = `
-            <div x-data="{ show: true }">
-                <template x-if="show">
+            <div hx-data="{ show: true }">
+                <template hx-if="show">
                     <p></p>
                 </template>
             </div>
@@ -35,8 +35,8 @@ describe('x-if directive', () => {
 
     it('should not create element on falsy value', async () => {
         document.body.innerHTML = `
-            <div x-data="{ show: false }">
-                <template x-if="show">
+            <div hx-data="{ show: false }">
+                <template hx-if="show">
                     <p></p>
                 </template>
             </div>
@@ -54,9 +54,9 @@ describe('x-if directive', () => {
 
     it('should be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ show: false }">
-                <button x-on:click="show = ! show"></button>
-                <template x-if="show">
+            <div hx-data="{ show: false }">
+                <button hx-on:click="show = ! show"></button>
+                <template hx-if="show">
                     <p></p>
                 </template>
             </div>
@@ -79,12 +79,12 @@ describe('x-if directive', () => {
 
     it('should contain reactive elements', async () => {
         document.body.innerHTML = `
-            <div x-data="{ show: false, foo: 'bar' }">
-                <h1 x-on:click="show = ! show"></h1>
-                <template x-if="show">
-                    <h2 x-on:click="foo = 'baz'"></h2>
+            <div hx-data="{ show: false, foo: 'bar' }">
+                <h1 hx-on:click="show = ! show"></h1>
+                <template hx-if="show">
+                    <h2 hx-on:click="foo = 'baz'"></h2>
                 </template>
-                <span x-text="foo"></span>
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -111,10 +111,10 @@ describe('x-if directive', () => {
 
     it('should attach event listeners once', async () => {
         document.body.innerHTML = `
-            <div x-data="{ count: 0 }">
-                <span x-text="count"></span>
-                <template x-if="true">
-                    <button x-on:click="count += 1">Click me</button>
+            <div hx-data="{ count: 0 }">
+                <span hx-text="count"></span>
+                <template hx-if="true">
+                    <button hx-on:click="count += 1">Click me</button>
                 </template>
             </div>
         `;
@@ -135,14 +135,14 @@ describe('x-if directive', () => {
         await waitFor(() => { expect(document.querySelector('span')!.textContent).equal('1') });
     });
 
-    it('should be complemented by \'x-else\' directive', async () => {
+    it('should be complemented by \'hx-else\' directive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ show: false }">
-                <template x-if="show">
-                    <p x-text="'Shown'"></p>
+            <div hx-data="{ show: false }">
+                <template hx-if="show">
+                    <p hx-text="'Shown'"></p>
                 </template>
-                <template x-else>
-                    <p x-text="'Hidden'"></p>
+                <template hx-else>
+                    <p hx-text="'Hidden'"></p>
                 </template>
             </div>
         `;
@@ -160,15 +160,15 @@ describe('x-if directive', () => {
         expect(document.querySelectorAll('p')[0].textContent).equal('Hidden');
     });
 
-    it('should be complemented by \'x-else\' directive and be reactive', async () => {
+    it('should be complemented by \'hx-else\' directive and be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ show: true }">
-                <button x-on:click="show = ! show"></button>
-                <template x-if="show">
-                    <p x-text="'Shown'"></p>
+            <div hx-data="{ show: true }">
+                <button hx-on:click="show = ! show"></button>
+                <template hx-if="show">
+                    <p hx-text="'Shown'"></p>
                 </template>
-                <template x-else>
-                    <p x-text="'Hidden'"></p>
+                <template hx-else>
+                    <p hx-text="'Hidden'"></p>
                 </template>
             </div>
         `;
@@ -197,18 +197,18 @@ describe('x-if directive', () => {
         await waitFor(() => { expect(document.querySelectorAll('p')[0].textContent).equal('Shown') });
     });
 
-    it('should be complemented by a chain of \'x-else\' directives', async () => {
+    it('should be complemented by a chain of \'hx-else\' directives', async () => {
         document.body.innerHTML = `
-            <div x-data="{ count: 0 }">
-                <button x-on:click="count += 1"></button>
-                <template x-if="count == 0">
-                    <p x-text="'Count 0'"></p>
+            <div hx-data="{ count: 0 }">
+                <button hx-on:click="count += 1"></button>
+                <template hx-if="count == 0">
+                    <p hx-text="'Count 0'"></p>
                 </template>
-                <template x-else="count == 1">
-                    <p x-text="'Count 1'"></p>
+                <template hx-else="count == 1">
+                    <p hx-text="'Count 1'"></p>
                 </template>
-                <template x-else>
-                    <p x-text="'Count *'"></p>
+                <template hx-else>
+                    <p hx-text="'Count *'"></p>
                 </template>
             </div>
         `;
@@ -239,10 +239,10 @@ describe('x-if directive', () => {
 
     it('should work inside a loop', () => {
         document.body.innerHTML = `
-            <div x-data="{ foos: [{bar: 'baz'}, {bar: 'bop'}]}">
-                <template x-each="foos as foo">
-                    <template x-if="foo.bar === 'baz'">
-                        <span x-text="foo.bar"></span>
+            <div hx-data="{ foos: [{bar: 'baz'}, {bar: 'bop'}]}">
+                <template hx-each="foos as foo">
+                    <template hx-if="foo.bar === 'baz'">
+                        <span hx-text="foo.bar"></span>
                     </template>
                 </template>
             </div>

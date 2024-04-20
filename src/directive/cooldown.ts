@@ -1,37 +1,33 @@
-import { AddDirectiveHandler, CreateDirectiveHandlerCallback, EvaluateLater, FindComponentById } from "@benbraide/inlinejs";
+import { AddDirectiveHandler, CreateDirectiveHandlerCallback, EvaluateLater, FindComponentById, StoreProxyHandler } from "@benbraide/inlinejs";
 
-enum CooldownType{
-    tick,
-    idle,
-    nonIdle,
-}
-
-function CreateCooldownHandlerCallback(name: string, type: CooldownType){
+export function CreateCooldownHandlerCallback(name: string, binder: (componentId: string, handler: () => void) => void){
     return CreateDirectiveHandlerCallback(name, ({ componentId, contextElement, expression }) => {
+        const storedProxyHandler = StoreProxyHandler(componentId);
         const evaluateLater = EvaluateLater({ componentId, contextElement, expression, disableFunctionCall: false });
 
-        let binder: () => void, handler = () => {
-            binder();
-            evaluateLater();
+        const handler = () => {
+            binder(componentId, handler);
+            storedProxyHandler(() => evaluateLater());
         };
 
-        if (type === CooldownType.idle){
-            binder = () => FindComponentById(componentId)?.GetBackend().changes.AddNextIdleHandler(handler);
-        }
-        else if (type === CooldownType.nonIdle){
-            binder = () => FindComponentById(componentId)?.GetBackend().changes.AddNextNonIdleHandler(handler);
-        }
-        else{
-            binder = () => FindComponentById(componentId)?.GetBackend().changes.AddNextTickHandler(handler);
-        }
-
-        binder();
+        binder(componentId, handler);
     });
 }
 
-export const NextTickDirectiveHandler = CreateCooldownHandlerCallback('next-tick', CooldownType.tick);
-export const NextIdleDirectiveHandler = CreateCooldownHandlerCallback('next-idle', CooldownType.idle);
-export const NextNonIdleDirectiveHandler = CreateCooldownHandlerCallback('next-non-idle', CooldownType.nonIdle);
+export const NextTickDirectiveHandler = CreateCooldownHandlerCallback(
+    'next.tick',
+    (componentId, handler) => FindComponentById(componentId)?.GetBackend().changes.AddNextTickHandler(handler)
+);
+
+export const NextIdleDirectiveHandler = CreateCooldownHandlerCallback(
+    'next.idle',
+    (componentId, handler) => FindComponentById(componentId)?.GetBackend().changes.AddNextIdleHandler(handler)
+);
+
+export const NextNonIdleDirectiveHandler = CreateCooldownHandlerCallback(
+    'next.non.idle',
+    (componentId, handler) => FindComponentById(componentId)?.GetBackend().changes.AddNextNonIdleHandler(handler)
+);
 
 export function CooldownDirectiveHandlerCompact(){
     AddDirectiveHandler(NextTickDirectiveHandler);

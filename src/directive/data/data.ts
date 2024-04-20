@@ -47,9 +47,9 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
         Object.entries(config!.locals!).forEach(([key, value]) => elementScope!.SetLocal(key, value));
     }
     
-    let id: string,  proxy: any, parentLocal: object | null, key = `$${ContextKeys.scope}`;
+    let id: string, proxy: any, parentLocal: object | null, key = `$${ContextKeys.scope}`;
     if (resolvedComponent.GetRoot() !== contextElement){//Add new scope
-        let scope = resolvedComponent.CreateScope(contextElement);
+        const scope = resolvedComponent.CreateScope(contextElement);
         if (!scope){
             JournalError('Failed to create component scope.', 'DataDirectiveHandler', contextElement);
             return;
@@ -59,16 +59,16 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
         config?.name && scope.SetName(config.name);
 
         PushCurrentScope(resolvedComponent, id);
-        elementScope.AddPostProcessCallback(() => PopCurrentScope(componentId));
+        elementScope.AddPostAttributesProcessCallback(() => PopCurrentScope(componentId));
         
         proxy = scope.GetProxy().GetNative();
         parentLocal = CreateInplaceProxy(BuildProxyOptions({
             getter: (prop) => {
-                let component = FindComponentById(componentId), parent = component?.FindElementLocalValue((component?.FindAncestor(contextElement) || ''), key, true);
+                const component = FindComponentById(componentId), parent = component?.FindElementLocalValue((component?.FindAncestor(contextElement) || ''), key, true);
                 return ((parent && !GetGlobal().IsNothing(parent) && prop) ? parent[prop] : undefined);
             },
             setter: (prop, value) => {
-                let component = FindComponentById(componentId), parent = component?.FindElementLocalValue((component?.FindAncestor(contextElement) || ''), key, true);
+                const component = FindComponentById(componentId), parent = component?.FindElementLocalValue((component?.FindAncestor(contextElement) || ''), key, true);
                 (parent && !GetGlobal().IsNothing(parent) && prop) && (parent[prop] = value);
                 return true;
             },
@@ -89,12 +89,13 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
 
     elementScope.SetLocal('$parent', parentLocal);
     elementScope.SetLocal('$ancestor', (index = 0) => {
-        let component = FindComponentById(componentId), ancestor = component?.FindAncestor(contextElement, (index || 0));
+        const component = FindComponentById(componentId), ancestor = component?.FindAncestor(contextElement, (index || 0));
         return (ancestor ? component!.FindElementLocalValue(ancestor, key, true) : undefined);
     });
     
     config?.name && elementScope.SetLocal('$name', config.name);
     elementScope.SetLocal('$id', id);
+    elementScope.SetLocal('$root', contextElement);
     
     elementScope.SetLocal(key, CreateInplaceProxy(BuildProxyOptions({
         getter: (prop) => (prop ? proxy[prop] : undefined),
@@ -105,11 +106,11 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
         lookup: () => true,
     })));
 
-    let target = GetTarget(proxy);
+    const target = GetTarget(proxy);
     Object.entries(data).forEach(([key, value]) => (target[key] = value));
 
     if (config?.init){//Evaluate init callback
-        let { context } = resolvedComponent.GetBackend();
+        const { context } = resolvedComponent.GetBackend();
         
         context.Push(ContextKeys.self, contextElement);
         PushCurrentComponent(componentId);
@@ -120,24 +121,22 @@ export const DataDirectiveHandler = CreateDirectiveHandlerCallback('data', ({ co
         context.Pop(ContextKeys.self);
     }
 
-    if (config?.uninit){
-        elementScope.AddUninitCallback(() => {
-            let component = FindComponentById(componentId);
-            if (!component){
-                return;
-            }
+    config?.uninit && elementScope.AddUninitCallback(() => {
+        const component = FindComponentById(componentId);
+        if (!component){
+            return;
+        }
 
-            let { context } = component.GetBackend(), proxy = component.GetRootProxy().GetNative();
+        const { context } = component.GetBackend(), proxy = component.GetRootProxy().GetNative();
+    
+        context.Push(ContextKeys.self, contextElement);
+        PushCurrentComponent(componentId);
         
-            context.Push(ContextKeys.self, contextElement);
-            PushCurrentComponent(componentId);
-            
-            JournalTry(() => config!.uninit!.call(proxy), 'DataDirectiveHandler.Uninit', contextElement);
+        JournalTry(() => config!.uninit!.call(proxy), 'DataDirectiveHandler.Uninit', contextElement);
 
-            PopCurrentComponent();
-            context.Pop(ContextKeys.self);
-        });
-    }
+        PopCurrentComponent();
+        context.Pop(ContextKeys.self);
+    });
 });
 
 export function DataDirectiveHandlerCompact(){

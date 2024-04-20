@@ -1,7 +1,7 @@
 import { FindComponentById, AddMagicHandler, CreateMagicHandlerCallback, BuildGetterProxyOptions, CreateInplaceProxy } from "@benbraide/inlinejs";
 
 export const ScopeMagicHandler = CreateMagicHandlerCallback('scope', ({ componentId, component, contextElement }) => {
-    return (component || FindComponentById(componentId))?.InferScopeFrom(contextElement);
+    return (component || FindComponentById(componentId))?.InferScopeFrom(contextElement)?.GetProxy().GetNative();
 });
 
 export const ScopesMagicHandler = CreateMagicHandlerCallback('scopes', ({ componentId }) => {

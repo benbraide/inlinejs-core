@@ -17,10 +17,10 @@ import { ComponentMagicHandlerCompact } from '../magic/data/component';
 describe('$watch global magic property', () => {
     it('should be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar', bob: 'lob' }" x-static="$watch('foo', value => { bob = value })">
-                <h1 x-text="foo"></h1>
-                <h2 x-text="bob"></h2>
-                <button x-on:click="foo = 'baz'"></button>
+            <div hx-data="{ foo: 'bar', bob: 'lob' }" hx-static="$watch('foo', value => { bob = value })">
+                <h1 hx-text="foo"></h1>
+                <h2 hx-text="bob"></h2>
+                <button hx-on:click="foo = 'baz'"></button>
             </div>
         `;
     
@@ -48,10 +48,10 @@ describe('$watch global magic property', () => {
 
     it('should support nested properties', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: { bar: 'baz', bob: 'lob' } }" x-static="$watch('foo.bar', value => { foo.bob = value })">
-                <h1 x-text="foo.bar"></h1>
-                <h2 x-text="foo.bob"></h2>
-                <button x-on:click="foo.bar = 'law'"></button>
+            <div hx-data="{ foo: { bar: 'baz', bob: 'lob' } }" hx-static="$watch('foo.bar', value => { foo.bob = value })">
+                <h1 hx-text="foo.bar"></h1>
+                <h2 hx-text="foo.bob"></h2>
+                <button hx-on:click="foo.bar = 'law'"></button>
             </div>
         `;
     
@@ -79,16 +79,16 @@ describe('$watch global magic property', () => {
 
     it('should be reactive with arrays', async () => {
         document.body.innerHTML = `
-            <div x-data="{ $config: { reactiveState: 'unoptimized' }, foo: ['one'], bob: 'lob' }" x-static="$watch('foo', value => { bob = value.map(item => item) })">
-                <h1 x-text="foo"></h1>
-                <h2 x-text="bob"></h2>
-                <button id="push" x-on:click="foo.push('two')"></button>
-                <button id="pop" x-on:click="foo.pop()"></button>
-                <button id="unshift" x-on:click="foo.unshift('zero')"></button>
-                <button id="shift" x-on:click="foo.shift()"></button>
-                <button id="assign" x-on:click="foo = [2,1,3]"></button>
-                <button id="sort" x-on:click="foo.sort()"></button>
-                <button id="reverse" x-on:click="foo.reverse()"></button>
+            <div hx-data="{ $config: { reactiveState: 'unoptimized' }, foo: ['one'], bob: 'lob' }" hx-static="$watch('foo', value => { bob = value.map(item => item) })">
+                <h1 hx-text="foo"></h1>
+                <h2 hx-text="bob"></h2>
+                <button id="push" hx-on:click="foo.push('two')"></button>
+                <button id="pop" hx-on:click="foo.pop()"></button>
+                <button id="unshift" hx-on:click="foo.unshift('zero')"></button>
+                <button id="shift" hx-on:click="foo.shift()"></button>
+                <button id="assign" hx-on:click="foo = [2,1,3]"></button>
+                <button id="sort" hx-on:click="foo.sort()"></button>
+                <button id="reverse" hx-on:click="foo.reverse()"></button>
             </div>
         `;
     
@@ -158,10 +158,10 @@ describe('$watch global magic property', () => {
 
     it('should support nested arrays', async () => {
         document.body.innerHTML = `
-            <div x-data="{ $config: { reactiveState: 'unoptimized' }, foo: {baz: ['one']}, bob: 'lob' }" x-static="$watch('foo.baz', value => { bob = value })">
-                <h1 x-text="foo.baz"></h1>
-                <h2 x-text="bob"></h2>
-                <button id="push" x-on:click="foo.baz.push('two')"></button>
+            <div hx-data="{ $config: { reactiveState: 'unoptimized' }, foo: {baz: ['one']}, bob: 'lob' }" hx-static="$watch('foo.baz', value => { bob = value })">
+                <h1 hx-text="foo.baz"></h1>
+                <h2 hx-text="bob"></h2>
+                <button id="push" hx-on:click="foo.baz.push('two')"></button>
             </div>
         `;
     
@@ -189,9 +189,9 @@ describe('$watch global magic property', () => {
 
     it('should support magic properties', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar', bob: 'car' }" x-component="magic-prop" x-static="$watch('$component(\\'magic-prop\\').foo', value => bob = value)">
-                <span x-text="bob"></span>
-                <button x-on:click="$component('magic-prop').foo = 'far'"></button>
+            <div hx-data="{ foo: 'bar', bob: 'car' }" hx-component="magic-prop" hx-static="$watch('$component(\\'magic-prop\\').foo', value => bob = value)">
+                <span hx-text="bob"></span>
+                <button hx-on:click="$component('magic-prop').foo = 'far'"></button>
             </div>
         `;
     

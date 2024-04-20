@@ -1,4 +1,4 @@
-import { AddDirectiveHandler, CreateDirectiveHandlerCallback, EvaluateLater, GetGlobal, JournalError, UseEffect } from "@benbraide/inlinejs";
+import { AddDirectiveHandler, CreateDirectiveHandlerCallback, EvaluateLater, GetGlobal, JournalError, StoreProxyHandler, UseEffect } from "@benbraide/inlinejs";
 import { ICodeConcept } from "../types";
 
 export const CodeDirectiveHandler = CreateDirectiveHandlerCallback('code', ({ componentId, contextElement, expression, argKey, originalView }) => {
@@ -9,18 +9,19 @@ export const CodeDirectiveHandler = CreateDirectiveHandlerCallback('code', ({ co
 
     expression = expression.trim();
     
-    let content = (contextElement.content.textContent || '').trim();
+    const content = (contextElement.content.textContent || '').trim();
     expression && content && GetGlobal().GetConcept<ICodeConcept>('code')?.AddBlock(expression, content);
     
     if (argKey !== 'tmpl' && argKey !== 'template'){
-        let evaluate = EvaluateLater({ componentId, contextElement, expression: content, disableFunctionCall: true });
+        const storedProxyHandler = StoreProxyHandler(componentId);
+        const evaluate = EvaluateLater({ componentId, contextElement, expression: content, disableFunctionCall: true });
         if (argKey === 'effect'){
             UseEffect({ componentId, contextElement,
                 callback: () => evaluate(),
             });
         }
         else{
-            evaluate();
+            storedProxyHandler(() => evaluate());
         }
     }
 });

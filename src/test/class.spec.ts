@@ -10,11 +10,11 @@ import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { ClassDirectiveHandlerCompact } from '../directive/attr/class';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 
-describe('x-class directive', () => {
+describe('hx-class directive', () => {
     it('should remove class when attribute value is falsy', () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: false }">
-                <span class="foo" x-class:foo="foo"></span>
+            <div hx-data="{ foo: false }">
+                <span class="foo" hx-class:foo="foo"></span>
             </div>
         `;
     
@@ -30,8 +30,8 @@ describe('x-class directive', () => {
 
     it('should add class when attribute value is truthy', () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: true }">
-                <span x-class:foo="foo"></span>
+            <div hx-data="{ foo: true }">
+                <span hx-class:foo="foo"></span>
             </div>
         `;
     
@@ -47,9 +47,9 @@ describe('x-class directive', () => {
 
     it('should be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: true }">
-                <span x-class:foo="foo"></span>
-                <button x-on:click="foo = false"></button>
+            <div hx-data="{ foo: true }">
+                <span hx-class:foo="foo"></span>
+                <button hx-on:click="foo = false"></button>
             </div>
         `;
     
@@ -70,8 +70,8 @@ describe('x-class directive', () => {
 
     it('should accept a key-value map', () => {
         document.body.innerHTML = `
-            <div x-data="{ map: { foo: true, zoo: false } }">
-                <span x-class="map"></span>
+            <div hx-data="{ map: { foo: true, zoo: false } }">
+                <span hx-class="map"></span>
             </div>
         `;
     
@@ -88,9 +88,9 @@ describe('x-class directive', () => {
 
     it('should have reactive key-value map', async () => {
         document.body.innerHTML = `
-            <div x-data="{ map: { foo: true, zoo: false } }">
-                <span x-class="map"></span>
-                <button x-on:click="map.foo = !(map.zoo = true)"></button>
+            <div hx-data="{ map: { foo: true, zoo: false } }">
+                <span hx-class="map"></span>
+                <button hx-on:click="map.foo = !(map.zoo = true)"></button>
             </div>
         `;
     
@@ -113,9 +113,9 @@ describe('x-class directive', () => {
 
     it('should accept the short form and be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: true }">
+            <div hx-data="{ foo: true }">
                 <span .foo="foo"></span>
-                <button x-on:click="foo = false"></button>
+                <button hx-on:click="foo = false"></button>
             </div>
         `;
     
@@ -136,9 +136,9 @@ describe('x-class directive', () => {
 
     it('should be merged by string syntax', async () => {
         document.body.innerHTML = `
-            <div x-data="{ isOn: false }">
-                <span class="foo" x-class="isOn ? 'bar': ''"></span>
-                <button x-on:click="isOn = ! isOn"></button>
+            <div hx-data="{ isOn: false }">
+                <span class="foo" hx-class="isOn ? 'bar': ''"></span>
+                <button hx-on:click="isOn = ! isOn"></button>
             </div>
         `;
         
@@ -170,9 +170,9 @@ describe('x-class directive', () => {
 
     it('should be merged by array syntax', async () => {
         document.body.innerHTML = `
-            <div x-data="{ isOn: false }">
-                <span class="foo" x-class="isOn ? ['bar', 'baz'] : ['bar']"></span>
-                <button x-on:click="isOn = ! isOn"></button>
+            <div hx-data="{ isOn: false }">
+                <span class="foo" hx-class="isOn ? ['bar', 'baz'] : ['bar']"></span>
+                <button hx-on:click="isOn = ! isOn"></button>
             </div>
         `;
         
@@ -207,8 +207,8 @@ describe('x-class directive', () => {
 
     it('should remove multiple classes by object syntax', () => {
         document.body.innerHTML = `
-            <div x-data="{ isOn: false }">
-                <span class="foo bar" x-class="{ 'foo bar': isOn }"></span>
+            <div hx-data="{ isOn: false }">
+                <span class="foo bar" hx-class="{ 'foo bar': isOn }"></span>
             </div>
         `;
     
@@ -225,8 +225,8 @@ describe('x-class directive', () => {
 
     it('should add multiple classes by object syntax', () => {
         document.body.innerHTML = `
-            <div x-data="{ isOn: true }">
-                <span x-class="{ 'foo bar': isOn }"></span>
+            <div hx-data="{ isOn: true }">
+                <span hx-class="{ 'foo bar': isOn }"></span>
             </div>
         `;
     
@@ -243,8 +243,8 @@ describe('x-class directive', () => {
 
     it('should be added by array syntax', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <span class="" x-class="['foo', 'bar']"></span>
+            <div hx-data>
+                <span class="" hx-class="['foo', 'bar']"></span>
             </div>
         `;
         
@@ -261,8 +261,8 @@ describe('x-class directive', () => {
 
     it('should be synced by string syntax', () => {
         document.body.innerHTML = `
-            <div x-data="{foo: 'bar baz'}">
-                <span class="" x-class="foo"></span>
+            <div hx-data="{foo: 'bar baz'}">
+                <span class="" hx-class="foo"></span>
             </div>
         `;
     
@@ -279,8 +279,8 @@ describe('x-class directive', () => {
 
     it('should ignore extra whitespace in object syntax', async () => {
         document.body.innerHTML = `
-            <div x-data>
-                <span x-class="{ '  foo  bar  ': true }"></span>
+            <div hx-data>
+                <span hx-class="{ '  foo  bar  ': true }"></span>
             </div>
         `;
 
@@ -297,8 +297,8 @@ describe('x-class directive', () => {
     
     it('should ignore extra whitespace in string syntax', () => {
         document.body.innerHTML = `
-            <div x-data>
-                <span x-class="'  foo  bar  '"></span>
+            <div hx-data>
+                <span hx-class="'  foo  bar  '"></span>
             </div>
         `;
 

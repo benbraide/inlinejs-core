@@ -14,11 +14,11 @@ import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 import { UnoptimizedMagicHandlerCompact } from '../magic/reactive/unoptimized';
 
 describe('component', () => {
-    it('can be initialized with the \'x-component\' directive', () => {
+    it('can be initialized with the \'hx-component\' directive', () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data x-component="${key}">
-                <span x-text="$name"></span>
+            <div hx-data hx-component="${key}">
+                <span hx-text="$name"></span>
             </div>
         `;
     
@@ -38,8 +38,8 @@ describe('component', () => {
     it('can be initialized with the \'$config.name\' key during data initialization', () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ $config: { name: '${key}' } }">
-                <span x-text="$name"></span>
+            <div hx-data="{ $config: { name: '${key}' } }">
+                <span hx-text="$name"></span>
             </div>
         `;
     
@@ -58,8 +58,8 @@ describe('component', () => {
     it('can retrieve the current component name via the \'$name\' global magic property', () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ $config: { name: '${key}' } }">
-                <span x-text="$name"></span>
+            <div hx-data="{ $config: { name: '${key}' } }">
+                <span hx-text="$name"></span>
             </div>
         `;
     
@@ -78,9 +78,9 @@ describe('component', () => {
     it('can retrieve another component via the $component global magic property', () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }" x-component="${key}"></div>
-            <div x-data>
-                <span x-text="$component('${key}').foo"></span>
+            <div hx-data="{ foo: 'bar' }" hx-component="${key}"></div>
+            <div hx-data>
+                <span hx-text="$component('${key}').foo"></span>
             </div>
         `;
     
@@ -100,15 +100,15 @@ describe('component', () => {
     it('should ensure data retrieved from other components are reactive', async () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }" x-component="${key}">
-                <span x-text="foo"></span>
-                <button x-on:click="foo = 'changed in ${key}'"></button>
+            <div hx-data="{ foo: 'bar' }" hx-component="${key}">
+                <span hx-text="foo"></span>
+                <button hx-on:click="foo = 'changed in ${key}'"></button>
             </div>
-            <div x-data="{ foo: 'baz' }">
-                <span x-text="foo"></span>
-                <span x-text="$component('${key}').foo"></span>
-                <button x-on:click="foo = 'unnamed changed'"></button>
-                <button x-on:click="$component('${key}').foo = 'changed in unnamed'"></button>
+            <div hx-data="{ foo: 'baz' }">
+                <span hx-text="foo"></span>
+                <span hx-text="$component('${key}').foo"></span>
+                <button hx-on:click="foo = 'unnamed changed'"></button>
+                <button hx-on:click="$component('${key}').foo = 'changed in unnamed'"></button>
             </div>
         `;
     
@@ -155,12 +155,12 @@ describe('component', () => {
     it('should obey per region optimized setting when accessing data from other components', async () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ nested: {foo: 'bar'} }" x-component="${key}">
-                <span x-text="nested.foo"></span>
-                <button x-on:click="nested = {foo: 'unoptimized'}"></button>
+            <div hx-data="{ nested: {foo: 'bar'} }" hx-component="${key}">
+                <span hx-text="nested.foo"></span>
+                <button hx-on:click="nested = {foo: 'unoptimized'}"></button>
             </div>
-            <div x-data="{ $config: { reactiveState: 'unoptimized' } }">
-                <span x-text="$component('${key}').nested.foo"></span>
+            <div hx-data="{ $config: { reactiveState: 'unoptimized' } }">
+                <span hx-text="$component('${key}').nested.foo"></span>
             </div>
         `;
 
@@ -187,12 +187,12 @@ describe('component', () => {
     it('should obey \'$unoptimized\' global magic property when accessing data from other components', async () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ nested: {foo: 'bar'} }" x-component="${key}">
-                <span x-text="nested.foo"></span>
-                <button x-on:click="nested = {foo: 'unoptimized'}"></button>
+            <div hx-data="{ nested: {foo: 'bar'} }" hx-component="${key}">
+                <span hx-text="nested.foo"></span>
+                <button hx-on:click="nested = {foo: 'unoptimized'}"></button>
             </div>
-            <div x-data>
-                <span x-text="$unoptimized($component('${key}').nested.foo)"></span>
+            <div hx-data>
+                <span hx-text="$unoptimized($component('${key}').nested.foo)"></span>
             </div>
         `;
     
@@ -220,12 +220,12 @@ describe('component', () => {
     it('should not be affected by optimized settings in other components', async () => {
         let key = RandomString(18);
         document.body.innerHTML = `
-            <div x-data="{ nested: {foo: 'bar'} }" x-component="${key}">
-                <span x-text="nested.foo"></span>
-                <button x-on:click="nested = {foo: 'unoptimized'}"></button>
+            <div hx-data="{ nested: {foo: 'bar'} }" hx-component="${key}">
+                <span hx-text="nested.foo"></span>
+                <button hx-on:click="nested = {foo: 'unoptimized'}"></button>
             </div>
-            <div x-data="{ $config: { reactiveState: 'optimized' } }">
-                <span x-text="$component('${key}').nested.foo"></span>
+            <div hx-data="{ $config: { reactiveState: 'optimized' } }">
+                <span hx-text="$component('${key}').nested.foo"></span>
             </div>
         `;
     

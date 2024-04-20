@@ -1,12 +1,12 @@
 import { FindComponentById, AddMagicHandler, CreateMagicHandlerCallback, CreateReadonlyProxy, InitJITProxy } from "@benbraide/inlinejs";
 
 export const StyleMagicHandler = CreateMagicHandlerCallback('style', ({ componentId, component, contextElement }) => {
-    let [elementKey, proxy, scope] = InitJITProxy('style', (component || FindComponentById(componentId)), contextElement);
+    const [elementKey, proxy, scope] = InitJITProxy('style', (component || FindComponentById(componentId)), contextElement);
     if (proxy){//Invalid context element OR proxy already exists
         return proxy;
     }
 
-    let methods = {
+    const methods = {
         unset(...keys: string[]){
             keys.forEach(key => (key in contextElement.style) && (contextElement.style[key] = ''));
             return this;

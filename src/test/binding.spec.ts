@@ -18,8 +18,8 @@ import { StaticDirectiveHandlerCompact } from '../directive/reactive/static';
 describe('data binding', () => {
     it('should work with data', () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-text="foo"></span>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-text="foo"></span>
             </div>
         `;
     
@@ -35,10 +35,10 @@ describe('data binding', () => {
 
     it('should execute functions returned from expressions', () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar', getFoo: () => foo, getFoo2(){ return this.foo }, nested: { baz: 'baz', getBaz(){ return this.baz } } }">
-                <span x-text="getFoo"></span>
-                <span x-text="getFoo2"></span>
-                <span x-text="nested.getBaz"></span>
+            <div hx-data="{ foo: 'bar', getFoo: () => foo, getFoo2(){ return this.foo }, nested: { baz: 'baz', getBaz(){ return this.baz } } }">
+                <span hx-text="getFoo"></span>
+                <span hx-text="getFoo2"></span>
+                <span hx-text="nested.getBaz"></span>
             </div>
         `;
     
@@ -47,7 +47,6 @@ describe('data binding', () => {
         DataDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();
 
-        debugger;
         BootstrapAndAttach();
     
         expect(document.querySelectorAll('span')[0].textContent).equal('bar');
@@ -57,9 +56,9 @@ describe('data binding', () => {
 
     it('should be reactive', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-text="foo"></span>
-                <button x-on:click="foo = 'baz'"></button>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-text="foo"></span>
+                <button hx-on:click="foo = 'baz'"></button>
             </div>
         `;
         
@@ -80,11 +79,11 @@ describe('data binding', () => {
 
     it('should be unoptimized by default', async () => {
         document.body.innerHTML = `
-            <div x-data="{ nested: {foo: 'bar'} }">
-                <span x-text="nested.foo"></span>
-                <span x-text="nested"></span>
-                <button x-on:click="nested.foo = 'baz'"></button>
-                <button x-on:click="nested = {foo: 'unoptimized'}"></button>
+            <div hx-data="{ nested: {foo: 'bar'} }">
+                <span hx-text="nested.foo"></span>
+                <span hx-text="nested"></span>
+                <button hx-on:click="nested.foo = 'baz'"></button>
+                <button hx-on:click="nested = {foo: 'unoptimized'}"></button>
             </div>
         `;
     
@@ -94,7 +93,6 @@ describe('data binding', () => {
         TextDirectiveHandlerCompact();
         OnDirectiveHandlerCompact();
 
-        debugger;
         BootstrapAndAttach();
     
         expect(document.querySelectorAll('span')[0].textContent).equal('bar');
@@ -113,11 +111,11 @@ describe('data binding', () => {
 
     it('should obey global reactive settings', async () => {
         document.body.innerHTML = `
-            <div x-data="{ nested: {foo: 'bar'} }">
-                <span x-text="nested.foo"></span>
-                <span x-text="nested"></span>
-                <button x-on:click="nested.foo = 'baz'"></button>
-                <button x-on:click="nested = {foo: 'unoptimized'}"></button>
+            <div hx-data="{ nested: {foo: 'bar'} }">
+                <span hx-text="nested.foo"></span>
+                <span hx-text="nested"></span>
+                <button hx-on:click="nested.foo = 'baz'"></button>
+                <button hx-on:click="nested = {foo: 'unoptimized'}"></button>
             </div>
         `;
         
@@ -145,11 +143,11 @@ describe('data binding', () => {
 
     it('should obey per component reactive settings', async () => {
         document.body.innerHTML = `
-            <div x-data="{ nested: {foo: 'bar'}, $config: {reactiveState: 'optimized'} }">
-                <span x-text="nested.foo"></span>
-                <span x-text="nested"></span>
-                <button x-on:click="nested.foo = 'baz'"></button>
-                <button x-on:click="nested = {foo: 'unoptimized'}"></button>
+            <div hx-data="{ nested: {foo: 'bar'}, $config: {reactiveState: 'optimized'} }">
+                <span hx-text="nested.foo"></span>
+                <span hx-text="nested"></span>
+                <button hx-on:click="nested.foo = 'baz'"></button>
+                <button hx-on:click="nested = {foo: 'unoptimized'}"></button>
             </div>
         `;
     
@@ -177,10 +175,10 @@ describe('data binding', () => {
 
     it('should obey \'$unoptimized\' global magic property', async () => {
         document.body.innerHTML = `
-            <div x-data="{ nested: {foo: 'bar'}, $config: {reactiveState: 'optimized'} }">
-                <span x-text="nested.foo"></span>
-                <span x-text="$unoptimized(nested.foo)"></span>
-                <button x-on:click="nested = {foo: 'unoptimized'}"></button>
+            <div hx-data="{ nested: {foo: 'bar'}, $config: {reactiveState: 'optimized'} }">
+                <span hx-text="nested.foo"></span>
+                <span hx-text="$unoptimized(nested.foo)"></span>
+                <button hx-on:click="nested = {foo: 'unoptimized'}"></button>
             </div>
         `;
     
@@ -205,10 +203,10 @@ describe('data binding', () => {
 
     it('should obey \'$static\' global magic property', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-text="foo"></span>
-                <span x-text="$static(foo)"></span>
-                <button x-on:click="foo = 'baz'"></button>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-text="foo"></span>
+                <span hx-text="$static(foo)"></span>
+                <button hx-on:click="foo = 'baz'"></button>
             </div>
         `;
     
@@ -231,13 +229,13 @@ describe('data binding', () => {
         await waitFor(() => { expect(document.querySelectorAll('span')[1].textContent).equal('bar') });
     });
 
-    it('should be reactive for \'x-effect\' directives', async () => {
+    it('should be reactive for \'hx-effect\' directives', async () => {
         document.body.innerHTML = `
-            <div x-data="{foo: 'bar'}">
-                <template x-effect="computed = (foo + ' added')"></template>
-                <span x-text="foo"></span>
-                <span x-text="computed"></span>
-                <button x-on:click="foo = 'baz'"></button>
+            <div hx-data="{foo: 'bar'}">
+                <template hx-effect="computed = (foo + ' added')"></template>
+                <span hx-text="foo"></span>
+                <span hx-text="computed"></span>
+                <button hx-on:click="foo = 'baz'"></button>
             </div>
         `;
     
@@ -259,13 +257,13 @@ describe('data binding', () => {
         await waitFor(() => { expect(document.querySelectorAll('span')[1].textContent).equal('baz added') });
     });
 
-    it('should not be reactive for \'x-static\' directives', async () => {
+    it('should not be reactive for \'hx-static\' directives', async () => {
         document.body.innerHTML = `
-            <div x-data="{foo: 'bar'}">
-                <template x-static="computed = (foo + ' added')"></template>
-                <span x-text="foo"></span>
-                <span x-text="computed"></span>
-                <button x-on:click="foo = 'baz'"></button>
+            <div hx-data="{foo: 'bar'}">
+                <template hx-static="computed = (foo + ' added')"></template>
+                <span hx-text="foo"></span>
+                <span hx-text="computed"></span>
+                <button hx-on:click="foo = 'baz'"></button>
             </div>
         `;
     

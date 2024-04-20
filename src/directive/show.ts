@@ -6,7 +6,13 @@ export const ShowDirectiveHandler = CreateDirectiveHandlerCallback('show', ({ co
             return;
         }
 
-        let show = () => {
+        const triggerEvent = (visible: boolean) => {
+            contextElement.dispatchEvent(new CustomEvent('show', {
+                detail: { visible }
+            }));
+        };
+
+        const show = () => {
             if (contextElement.style.length === 1 && contextElement.style.display === 'none') {
                 contextElement.removeAttribute('style');
             }
@@ -16,7 +22,7 @@ export const ShowDirectiveHandler = CreateDirectiveHandlerCallback('show', ({ co
         };
 
         if (!firstEntry || value){//Apply applicable transitions if not first entry or value is truthy
-            let myCheckpoint = ++checkpoint;
+            const myCheckpoint = ++checkpoint;
 
             transitionCancel && transitionCancel();
             !!value && show();
@@ -24,8 +30,9 @@ export const ShowDirectiveHandler = CreateDirectiveHandlerCallback('show', ({ co
             transitionCancel = WaitTransition({ componentId, contextElement,
                 callback: () => {
                     if (myCheckpoint == checkpoint){
-                        transitionCancel = null;
                         !value && (contextElement.style.display = 'none');
+                        transitionCancel = null;
+                        triggerEvent(!!value);
                     }
                 },
                 reverse: !value,

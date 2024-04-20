@@ -1,5 +1,6 @@
 export * from './types';
-export * from './concept/code';
+export * from './concepts/code';
+export * from './concepts/resource';
 export * from './directive/attr/bind';
 export * from './directive/attr/class';
 export * from './directive/attr/style';
@@ -32,6 +33,7 @@ export * from './magic/data/locals';
 export * from './magic/data/native';
 export * from './magic/data/proxy';
 export * from './magic/data/refs';
+export * from './magic/data/resource';
 export * from './magic/data/scope';
 export * from './magic/operations/arithmetic';
 export * from './magic/operations/logical';

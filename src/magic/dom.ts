@@ -5,6 +5,11 @@ const props = {
     form: ({ componentId, contextElement }: IMagicHandlerParams) => FindComponentById(componentId)?.FindElement(contextElement, el => (el instanceof HTMLFormElement)),
     ancestor: ({ componentId, contextElement }: IMagicHandlerParams) => (index?: number) => FindComponentById(componentId)?.FindAncestor(contextElement, (index || 0)),
     parent: ({ componentId, contextElement }: IMagicHandlerParams) => FindComponentById(componentId)?.FindAncestor(contextElement, 0),
+    window: () => globalThis,
+    document: () => globalThis.document,
+    console: () => globalThis.console,
+    log: () => ((...args: any[]) => globalThis.console.log(...args)),
+    alert: () => ((...args: any[]) => globalThis.alert(...args)),
 };
 
 export const DomMagicHandler = CreateMagicHandlerCallback('dom', ({ contextElement, componentId, component, ...rest }) => {
@@ -20,14 +25,14 @@ export const DomMagicHandler = CreateMagicHandlerCallback('dom', ({ contextEleme
                 }
                 
                 return (index?: number | string) => {
-                    let children = [...(contextElement.parentElement?.children || [])];
+                    const children = [...(contextElement.parentElement?.children || [])];
                     if (index === 'prev' || index === 'previous'){
-                        let index = children.findIndex(child => (child === contextElement));
+                        const index = children.findIndex(child => (child === contextElement));
                         return ((index > 0) ? (children.at(index - 1) || null) : null);
                     }
 
                     if (index === 'next'){
-                        let index = children.findIndex(child => (child === contextElement));
+                        const index = children.findIndex(child => (child === contextElement));
                         return ((index >= 0 && index < (children.length - 1)) ? (children.at(index + 1) || null) : null);
                     }
                     

@@ -17,9 +17,9 @@ import { EachDirectiveHandlerCompact } from '../directive/control/each';
 describe('$nextTick global magic property', () => {
     it('should execute attached callback', async () => {
         document.body.innerHTML = `
-            <div x-data="{ foo: 'bar' }">
-                <span x-ref="span" x-text="foo"></span>
-                <button x-on:click="foo = 'baz'; $nextTick(() => { $refs.span.textContent = 'bob' })"></button>
+            <div hx-data="{ foo: 'bar' }">
+                <span hx-ref="span" hx-text="foo"></span>
+                <button hx-on:click="foo = 'baz'; $nextTick(() => { $refs.span.textContent = 'bob' })"></button>
             </div>
         `;
     
@@ -42,18 +42,20 @@ describe('$nextTick global magic property', () => {
         await waitFor(() => expect(document.querySelector('span')!.textContent).equal('bob'));
     });
 
-    it('should wait for x-each directive to finish rendering', async () => {
+    it('should wait for hx-each directive to finish rendering', async () => {
         document.body.innerHTML = `
-            <div x-data="{ list: ['one', 'two'], check: 2 }">
-                <template x-each="list">
-                    <span x-text="$each.value"></span>
+            <div hx-data="{ list: ['one', 'two'], check: 2 }">
+                <template hx-each="list">
+                    <span hx-text="$each.value"></span>
                 </template>
-                <p x-text="check"></p>
-                <button x-on:click="list = ['one', 'two', 'three']; $nextTick(() => { check = document.querySelectorAll('span').length })"></button>
+                <p hx-text="check"></p>
+                <button hx-on:click="list = ['one', 'two', 'three']; $nextTick(() => { check = document.querySelectorAll('span').length })"></button>
             </div>
         `;
     
-        CreateGlobal();
+        CreateGlobal({
+            useGlobalWindow: true,
+        });
 
         DataDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();

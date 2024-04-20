@@ -1,7 +1,21 @@
 import { FindComponentById, EvaluateLater, JournalError, UseEffect, IDirectiveHandlerParams } from "@benbraide/inlinejs";
 
-export function InitControl({ componentId, component, contextElement, expression, originalView }: IDirectiveHandlerParams){
-    let resolvedComponent = (component || FindComponentById(componentId));
+export interface IControlCloneAttribute{
+    name: string;
+    value: string;
+}
+
+export interface IControlInitInfo{
+    checkpoint: number;
+    parent: HTMLElement;
+    blueprint: HTMLElement;
+    effect: (handler: (value: any) => void) => void;
+    clone: () => HTMLElement;
+    getCloneAttributes: () => Array<IControlCloneAttribute>;
+}
+
+export function InitControl({ componentId, component, contextElement, expression, originalView }: IDirectiveHandlerParams): IControlInitInfo | null{
+    const resolvedComponent = (component || FindComponentById(componentId));
     if (!resolvedComponent || resolvedComponent.GetRoot() === contextElement){
         JournalError('Target is component root.', `'${originalView}'.Init`, contextElement);
         return null;
@@ -17,7 +31,7 @@ export function InitControl({ componentId, component, contextElement, expression
         return null;
     }
 
-    let evaluate = EvaluateLater({ componentId, contextElement, expression, disableFunctionCall: true });
+    const evaluate = EvaluateLater({ componentId, contextElement, expression, disableFunctionCall: true });
     return {
         checkpoint: 0,
         parent: contextElement.parentElement!,
@@ -26,5 +40,6 @@ export function InitControl({ componentId, component, contextElement, expression
             callback: () => evaluate(handler),
         }),
         clone: () => <HTMLElement>contextElement.content.firstElementChild!.cloneNode(true),
+        getCloneAttributes: () => [...contextElement.content.firstElementChild!.attributes],
     };
 }

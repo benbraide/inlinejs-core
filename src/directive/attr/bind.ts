@@ -17,12 +17,12 @@ export const BindDirectiveHandler = CreateDirectiveHandlerCallback('bind', ({ co
         return (component || FindComponentById(componentId))?.FindElementScope(contextElement)?.SetKey(expression);
     }
 
-    let options = ResolveOptions({ options: { camel: false }, list: argOptions});
+    const options = ResolveOptions({ options: { camel: false }, list: argOptions});
     ResolveKeyValue({ componentId, contextElement, expression,
         key: argKey,
         callback: ([key, value]) => {
             key = (options.camel ? ToCamelCase(key) : key);
-            let isBoolean = IsBooleanAttribute(contextElement, key);
+            const isBoolean = IsBooleanAttribute(contextElement, key);
             if (value || ((value === 0 || value === '') && !isBoolean)){//Set
                 contextElement.setAttribute(key, (isBoolean ? key : ToString(value)));
             }
