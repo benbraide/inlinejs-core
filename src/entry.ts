@@ -68,6 +68,7 @@ import { DomMagicHandlerCompact } from './magic/dom';
 import { CodeMagicHandlerCompact } from './magic/code';
 import { InlineJSMagicHandlerCompact } from './magic/inline';
 import { WaitingMagicHandlerCompact } from './magic/waiting';
+import { WrapMagicHandlerCompact } from './magic/wrap';
 
 export function InlineJSCore(){
     WaitForGlobal().then(() => {
@@ -139,5 +140,6 @@ export function InlineJSCore(){
         CodeMagicHandlerCompact();
         InlineJSMagicHandlerCompact();
         WaitingMagicHandlerCompact();
+        WrapMagicHandlerCompact();
     });
 }

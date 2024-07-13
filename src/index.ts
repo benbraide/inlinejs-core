@@ -67,5 +67,6 @@ export * from './magic/pick'
 export * from './magic/code'
 export * from './magic/inline'
 export * from './magic/waiting'
+export * from './magic/wrap'
 
 export * from './entry'
