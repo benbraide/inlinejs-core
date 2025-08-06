@@ -30,7 +30,7 @@ const strProps = {
 let strProxy: object | null = null;
 
 export const InlineJSStrMagicHandler = CreateMagicHandlerCallback('str', () => strProxy = strProxy || CreateInplaceProxy(BuildGetterProxyOptions({
-    getter: prop => ((prop && strProps.hasOwnProperty(prop)) ? strProps[prop]() : undefined),
+    getter: prop => ((prop && strProps.hasOwnProperty(prop)) ? strProps[prop] : undefined),
     lookup: Object.keys(strProps),
 })));
 
