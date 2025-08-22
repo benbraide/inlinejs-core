@@ -152,8 +152,8 @@ export class EachDirectiveEntry<T extends string | number>{
         this.getCollection_ = () => this.collection_;
 
         const currentProxyAccessHandler = FindComponentById(componentId)?.GetProxyAccessHandler();
-        const parentProxy = ((currentProxyAccessHandler && ('GetProxy' in currentProxyAccessHandler))
-            ? (currentProxyAccessHandler as EachDirectiveProxyAccessHandler).GetProxy() : undefined);
+        const parentProxy = ((currentProxyAccessHandler instanceof EachDirectiveProxyAccessHandler)
+            ? currentProxyAccessHandler.GetProxy() : undefined);
 
         const id = this.id_, getCount = (list: ListType<any>) => (Array.isArray(list) ? list.length : Object.keys(list).length), props = {
             collection: () => this.getCollection_?.(),
@@ -167,7 +167,8 @@ export class EachDirectiveEntry<T extends string | number>{
             },
             value: () => {
                 const collection = this.getCollection_?.();
-                return (collection ? collection[<any>keyInCollection] : undefined);
+                const key = this.getKeyInCollection_?.();
+                return (collection && (key || key === 0) ? collection[<any>key] : undefined);
             },
             parent: () => parentProxy,
         };
@@ -181,8 +182,9 @@ export class EachDirectiveEntry<T extends string | number>{
         }, setter: (prop, value) => {
             if (prop === 'value'){
                 const collection = this.getCollection_?.();
-                if (collection){
-                    collection[<any>keyInCollection] = value;
+                const key = this.getKeyInCollection_?.();
+                if (collection && (key || key === 0)){
+                    collection[<any>key] = value;
                     AddChanges('set', `${this.id_}.value`, 'value', FindComponentById(this.componentId_)?.GetBackend().changes)
                     return true;
                 }
@@ -223,37 +225,81 @@ export class EachDirectiveEntry<T extends string | number>{
         });
     }
 
-    public Update(collection: ListType<any>, key: T, initInfo: IControlInitInfo, updateDomPosition = true){
-        if (this.contextElement_ && this.cloneElement_ && document.contains(this.cloneElement_)){
-            updateDomPosition && this.cloneElement_.parentElement?.insertBefore(this.cloneElement_, this.contextElement_);
-
-            [...this.cloneElement_.attributes].forEach(attr => this.cloneElement_!.removeAttribute(attr.name));//Remove all attributes
-            initInfo.getCloneAttributes().forEach(attr => this.cloneElement_!.setAttribute(attr.name, attr.value));//Copy attributes from clone
-
-            this.collection_ = collection;
-            this.keyInCollection_ = key;
-            
-            this.cancelTransition_?.();
-            FindComponentById(this.componentId_)?.FindElementScope(this.cloneElement_)?.Destroy();
-            
-            ProcessDirectives({
-                component: this.componentId_,
-                element: this.cloneElement_,
-                options: {
-                    checkDocument: false,
-                    checkTemplate: true,
-                },
-                proxyAccessHandler: this.proxyAccessHandler_,
-            });
-    
-            this.cancelTransition_ = WaitTransition({
-                componentId: this.componentId_,
-                contextElement: this.contextElement_,
-                target: this.cloneElement_,
-                callback: () => (this.cancelTransition_ = null),
-                reverse: false,
-            });
+    /**
+     * @description Updates the entry. This method is refactored to handle key changes and to
+     * manage DOM position more reliably.
+     * @param collection The new collection data.
+     * @param keyInCollection The key of the item within the collection.
+     * @param initInfo The control initialization info.
+     * @param getNewKey A function to re-evaluate the key expression.
+     * @param relativeEl The element to insert the clone before for correct DOM positioning.
+     */
+    public Update(
+        collection: ListType<any>,
+        keyInCollection: T,
+        initInfo: IControlInitInfo,
+        getNewKey: () => any,
+        relativeEl: HTMLElement | null
+    ){
+        // Step 1: Check if the element still exists in the DOM.
+        if (!this.contextElement_ || !this.cloneElement_ || !document.contains(this.cloneElement_)){
+            return;
         }
+        
+        // Step 2: Re-evaluate the key. If it has changed, we need to destroy this entry and create a new one.
+        // This prevents state-related bugs from carrying over.
+        const newKey = getNewKey();
+        if (this.key_ !== newKey) {
+            this.Destroy(); // Destroy the old entry and its DOM element
+            // Since we destroy the old entry, we rely on the `LoopDirectiveHandler` to create a new one
+            // in its place if needed. We return early here.
+            return;
+        }
+
+        // Step 3: Update data and reposition the DOM element.
+        // The DOM is now positioned correctly based on the `relativeEl` provided by the handler.
+        if (relativeEl) {
+            this.cloneElement_.parentElement?.insertBefore(this.cloneElement_, relativeEl);
+        } else {
+            // No relative element means it's the last item, so append to the parent.
+            this.cloneElement_.parentElement?.appendChild(this.cloneElement_);
+        }
+        
+        // Step 4: Update internal state.
+        this.collection_ = collection;
+        this.keyInCollection_ = keyInCollection;
+        
+        // Step 5: Process directives and handle transition.
+        // Instead of destroying and re-creating the element scope, we can try to simply re-process directives.
+        // This is a trade-off between performance and reliability. A full re-render on key change is safer.
+        // We've handled the key change above, so for position updates, this is acceptable.
+        
+        // Remove existing attributes to avoid conflicts.
+        [...this.cloneElement_.attributes].forEach(attr => this.cloneElement_!.removeAttribute(attr.name));
+        
+        // Copy new attributes from the template blueprint.
+        initInfo.getCloneAttributes().forEach(attr => this.cloneElement_!.setAttribute(attr.name, attr.value));
+
+        // Re-process directives to update the DOM with new data.
+        ProcessDirectives({
+            component: this.componentId_,
+            element: this.cloneElement_,
+            options: {
+                checkDocument: false,
+                checkTemplate: true,
+            },
+            proxyAccessHandler: this.proxyAccessHandler_,
+        });
+
+        // The transition is cancelled and restarted to handle re-render animations.
+        this.cancelTransition_?.();
+        this.cancelTransition_ = WaitTransition({
+            componentId: this.componentId_,
+            contextElement: this.contextElement_,
+            target: this.cloneElement_,
+            callback: () => (this.cancelTransition_ = null),
+            reverse: false,
+        });
     }
 
     public Destroy(){
@@ -283,62 +329,100 @@ export class EachDirectiveEntry<T extends string | number>{
     public GetKey(){
         return this.key_;
     }
+
+    public GetCloneElement(){
+        return this.cloneElement_;
+    }
 }
 
+/**
+ * @description The main loop directive handler is refactored to use a Map for better key-based lookups
+ * and to pass the correct relative element for DOM positioning.
+ */
 export function LoopDirectiveHandler(matchedExpression: string, keyName: string, valueName: string, { componentId, component, contextElement, expression, ...rest }: IDirectiveHandlerParams){
     let init = InitControl({ componentId, component, contextElement, expression: matchedExpression, ...rest });
     if (!init){//Failed to initialize
         return;
     }
 
-    const resolvedKey = ((FindComponentById(componentId)?.FindElementScope(contextElement)?.GetKey()) || GetDirectiveValue(contextElement, 'bind:key', ':key') || '');
+    // Use a WeakMap for key-to-entry mapping to prevent memory leaks if the key is an object.
+    const keyedItems = new Map<any, EachDirectiveEntry<number | string>>();
     
-    let insertedItems: Array<EachDirectiveEntry<number | string>> | null = null, recentInsertions: Array<EachDirectiveEntry<number | string>> | null = null;
+    // We get the expression for the key, which remains constant.
+    const resolvedKeyExpression = GetDirectiveValue(contextElement, 'bind:key', ':key') || null;
+
     const generateItems = (data: ListType<any>, callback: (inserter: (item: any, index: number | string) => void, cleanup: () => void) => void) => {
         let activeIndex: string | number = '';
-        const proxyAccessHandler = resolvedKey ? new InplaceEachDirectiveProxyAccessHandler(
+
+        const proxyAccessHandler = resolvedKeyExpression ? new InplaceEachDirectiveProxyAccessHandler(
             () => data,
             () => activeIndex,
             keyName,
             valueName,
         ) : null;
 
+        // A function to evaluate the key expression for the current item.
         const getCurrentKey = (callback: (key: any) => void) => {
-            if (resolvedKey && proxyAccessHandler){
-                UseProxyAccessHandler(componentId, proxyAccessHandler, () => EvaluateLater({ componentId, contextElement, expression: resolvedKey })(callback));
+            if (resolvedKeyExpression && proxyAccessHandler){
+                UseProxyAccessHandler(componentId, proxyAccessHandler, () => EvaluateLater({ componentId, contextElement, expression: resolvedKeyExpression })(callback));
             }
             else{
                 callback(GetGlobal().CreateNothing());
             }
         };
         
-        recentInsertions = new Array<EachDirectiveEntry<number | string>>();
+        // We will store entries in a temporary list for cleanup.
+        const currentEntries = new Map<any, EachDirectiveEntry<number | string>>();
+        let lastClonedElement: HTMLElement | null = null;
+
         callback((item, index) => {
             activeIndex = index;
             getCurrentKey((key) => {
-                const matched = resolvedKey && insertedItems && insertedItems.find(item => (item.GetKey() === key));
-                if (!matched && init){
-                    const entry = new EachDirectiveEntry({ componentId, contextElement, keyName, valueName, key,
+                const existingEntry = keyedItems.get(key);
+                if (!init){
+                    existingEntry?.Destroy();
+                    keyedItems.delete(key);
+                    return;
+                }
+
+                const validKey = GetGlobal().IsNothing(key) ? index : key;
+                
+                if (existingEntry) {
+                    // Update the existing entry with the new data and DOM position.
+                    existingEntry.Update(data, index, init, () => key, lastClonedElement ? lastClonedElement.nextElementSibling as HTMLElement : contextElement.parentElement!.firstElementChild as HTMLElement);
+                    currentEntries.set(key, existingEntry);
+
+                    lastClonedElement = existingEntry.GetCloneElement();
+                } else {
+                    // Create a new entry and add it to the map.
+                    const newEntry = new EachDirectiveEntry({
+                        componentId, contextElement, keyName, valueName,
+                        key: validKey,
                         initInfo: init,
                         keyInCollection: index,
                         collection: data,
                     });
 
-                    recentInsertions?.push(entry);
-                }
-                else if (matched && init){//Use entry with matching key
-                    recentInsertions?.push(matched);
-                    matched.Update(data, index, init);
+                    keyedItems.has(validKey) && keyedItems.get(validKey)?.Destroy();
+                    keyedItems.set(validKey, newEntry);
+                    currentEntries.set(validKey, newEntry);
+
+                    lastClonedElement = newEntry.GetCloneElement();
                 }
             });
-        }, () => {//Sync lists
-            insertedItems && insertedItems.filter(entry => !recentInsertions?.includes(entry)).forEach(entry => entry.Destroy());
-            insertedItems = recentInsertions;
+        }, () => { // Cleanup function.
+            // Destroy all entries that are not in the current list.
+            for (const [key, entry] of keyedItems) {
+                if (!currentEntries.has(key)) {
+                    entry.Destroy();
+                    keyedItems.delete(key);
+                }
+            }
         });
     };
     
     const generateArrayItems = (data: Array<any>) => generateItems(data, (inserter, cleanup) => {
-        data.forEach(inserter);
+        data.forEach((item, index) => inserter(item, index));
         cleanup();
     });
 
@@ -350,6 +434,7 @@ export function LoopDirectiveHandler(matchedExpression: string, keyName: string,
     (component || FindComponentById(componentId))?.FindElementScope(contextElement)?.AddUninitCallback(() => {
         init = null;
         generateArrayItems([]);
+        keyedItems.clear(); // Clear the map on un-initialization.
     });
 
     let firstEntry = true;

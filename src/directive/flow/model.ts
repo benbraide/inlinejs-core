@@ -79,10 +79,13 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
             return;
         }
 
-        if (!isCheckable && (contextElement instanceof HTMLInputElement || contextElement instanceof HTMLTextAreaElement)){
+        if (contextElement instanceof HTMLInputElement || contextElement instanceof HTMLTextAreaElement){
             contextElement.value = ToString(value);
         }
-        else if (isCheckable && !isRadio){
+        else if (isRadio){
+            (contextElement as HTMLInputElement).checked = IsEqual(transformData(value), transformData((contextElement as HTMLInputElement).value));
+        }
+        else if (isCheckable){
             if (Array.isArray(value)){//Add value to array
                 (contextElement as HTMLInputElement).checked = value.includes(transformData((contextElement as HTMLInputElement).value));
             }
@@ -90,16 +93,13 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
                 (contextElement as HTMLInputElement).checked = !!value;
             }
         }
-        else if (isRadio){
-            (contextElement as HTMLInputElement).checked = IsEqual(transformData(value), transformData((contextElement as HTMLInputElement).value));
-        }
-        else if ((contextElement as HTMLSelectElement).multiple){//Retrieve all selected
+        else if (contextElement instanceof HTMLSelectElement && contextElement.multiple){//Retrieve all selected
             if (Array.isArray(value)){//Value must be an array
                 Array.from((contextElement as HTMLSelectElement).options).forEach(opt => (opt.selected = value.includes(transformData(opt.value))));
             }
         }
-        else{//Single select
-            (contextElement as HTMLSelectElement).value = ToString(value);
+        else if (contextElement instanceof HTMLSelectElement){//Single select
+            contextElement.value = ToString(value);
         }
     };
     

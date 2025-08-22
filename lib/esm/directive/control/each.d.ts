@@ -45,10 +45,24 @@ export declare class EachDirectiveEntry<T extends string | number> {
     private cloneElement_;
     private cancelTransition_;
     constructor({ componentId, contextElement, keyInCollection, collection, initInfo, key, keyName, valueName }: IEachDirectiveEntryOptions<T>);
-    Update(collection: ListType<any>, key: T, initInfo: IControlInitInfo, updateDomPosition?: boolean): void;
+    /**
+     * @description Updates the entry. This method is refactored to handle key changes and to
+     * manage DOM position more reliably.
+     * @param collection The new collection data.
+     * @param keyInCollection The key of the item within the collection.
+     * @param initInfo The control initialization info.
+     * @param getNewKey A function to re-evaluate the key expression.
+     * @param relativeEl The element to insert the clone before for correct DOM positioning.
+     */
+    Update(collection: ListType<any>, keyInCollection: T, initInfo: IControlInitInfo, getNewKey: () => any, relativeEl: HTMLElement | null): void;
     Destroy(): void;
     GetKey(): any;
+    GetCloneElement(): HTMLElement | null;
 }
+/**
+ * @description The main loop directive handler is refactored to use a Map for better key-based lookups
+ * and to pass the correct relative element for DOM positioning.
+ */
 export declare function LoopDirectiveHandler(matchedExpression: string, keyName: string, valueName: string, { componentId, component, contextElement, expression, ...rest }: IDirectiveHandlerParams): void;
 export declare const EachDirectiveHandler: import("@benbraide/inlinejs").IDirectiveHandlerCallbackDetails;
 export declare const ForDirectiveHandler: import("@benbraide/inlinejs").IDirectiveHandlerCallbackDetails;

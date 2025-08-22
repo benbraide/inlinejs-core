@@ -98,7 +98,7 @@ export function CreateSelectionDirectiveHandler(isElse: boolean){
         init!.effect((value) => {
             const checkpoint = ++init!.checkpoint;
             StreamData(value, (value) => {
-                if (checkpoint == init?.checkpoint){
+                if (checkpoint === init?.checkpoint){
                     effect(value);
                 }
             });

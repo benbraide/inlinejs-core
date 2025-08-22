@@ -15,6 +15,11 @@ export interface IControlInitInfo{
 }
 
 export function InitControl({ componentId, component, contextElement, expression, originalView }: IDirectiveHandlerParams): IControlInitInfo | null{
+    if (!contextElement.parentElement){
+        JournalError('Target has no parent.', `'${originalView}'.Init`, contextElement);
+        return null;
+    }
+    
     const resolvedComponent = (component || FindComponentById(componentId));
     if (!resolvedComponent || resolvedComponent.GetRoot() === contextElement){
         JournalError('Target is component root.', `'${originalView}'.Init`, contextElement);
@@ -31,15 +36,15 @@ export function InitControl({ componentId, component, contextElement, expression
         return null;
     }
 
-    const evaluate = EvaluateLater({ componentId, contextElement, expression, disableFunctionCall: true });
+    const evaluate = EvaluateLater({ componentId, contextElement, expression, disableFunctionCall: true }), blueprint = contextElement.content.firstElementChild as HTMLElement;
     return {
         checkpoint: 0,
-        parent: contextElement.parentElement!,
-        blueprint: (contextElement.content.firstElementChild as HTMLElement),
+        parent: contextElement.parentElement,
+        blueprint: blueprint,
         effect: (handler: (value: any) => void) => UseEffect({ componentId, contextElement,
             callback: () => evaluate(handler),
         }),
-        clone: () => <HTMLElement>contextElement.content.firstElementChild!.cloneNode(true),
-        getCloneAttributes: () => [...contextElement.content.firstElementChild!.attributes],
+        clone: () => <HTMLElement>blueprint.cloneNode(true),
+        getCloneAttributes: () => [...blueprint.attributes],
     };
 }
