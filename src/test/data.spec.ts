@@ -9,7 +9,6 @@ import { CreateGlobal, BootstrapAndAttach, GetGlobal, RandomString } from '@benb
 import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { TextDirectiveHandlerCompact } from '../directive/flow/text';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
-import { UnoptimizedMagicHandlerCompact } from '../magic/reactive/unoptimized';
 
 describe('hx-data directive', () => {
     it('should be reactive when manipulated on component object', async () => {
@@ -156,7 +155,7 @@ describe('hx-data directive', () => {
     it('should not nest and duplicate proxies when manipulating an array', async () => {
         document.body.innerHTML = `
             <div hx-data="{ list: [ {name: 'foo'}, {name: 'bar'} ] }">
-                <span hx-text="$unoptimized(list[0].name)"></span>
+                <span hx-text="list[0].name"></span>
                 <button hx-on:click="list.sort((a, b) => (a.name > b.name) ? 1 : -1)"></button>
                 <h1 hx-on:click="list.sort((a, b) => (a.name < b.name) ? 1 : -1)"></h1>
             </div>
@@ -167,8 +166,6 @@ describe('hx-data directive', () => {
         DataDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();
         OnDirectiveHandlerCompact();
-
-        UnoptimizedMagicHandlerCompact();
 
         BootstrapAndAttach();
     

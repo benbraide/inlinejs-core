@@ -52,7 +52,6 @@ export * from './magic/operations/logical'
 export * from './magic/operations/relational'
 
 export * from './magic/reactive/static'
-export * from './magic/reactive/unoptimized'
 export * from './magic/reactive/watch'
 
 export * from './magic/attribute'
@@ -66,6 +65,7 @@ export * from './magic/pick'
 
 export * from './magic/code'
 export * from './magic/inline'
+export * from './magic/range'
 export * from './magic/waiting'
 export * from './magic/wrap'
 

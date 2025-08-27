@@ -18,32 +18,32 @@ export interface IEachDirectiveEntryOptions<T extends string | number> {
     valueName?: string | null;
 }
 export declare class EachDirectiveProxyAccessHandler implements IProxyAccessHandler {
-    private options_;
+    protected options_: EachDirectiveProxyAccessHandlerOptions;
     constructor(options_: EachDirectiveProxyAccessHandlerOptions);
     Get(key: string | number, target: object): any;
     Set(key: string | number, value: any, target: object): any;
     GetProxy(): object;
 }
 export declare class InplaceEachDirectiveProxyAccessHandler implements IProxyAccessHandler {
-    private getter_;
+    protected getter_: (key: string | number) => any;
     constructor(getCollection: () => ListType<any>, getKeyInCollection: () => string | number, keyName?: string | null, valueName?: string | null);
     Get(key: string | number): any;
 }
 export declare function UseProxyAccessHandler(componentId: string, handler: IProxyAccessHandler, callback: () => void): void;
 export declare class EachDirectiveEntry<T extends string | number> {
-    private componentId_;
-    private contextElement_;
-    private id_;
-    private key_;
-    private keyInCollection_;
-    private getKeyInCollection_;
-    private collection_;
-    private getCollection_;
-    private propKeys_;
-    private proxy_;
-    private proxyAccessHandler_;
-    private cloneElement_;
-    private cancelTransition_;
+    protected componentId_: string;
+    protected contextElement_: HTMLElement | null;
+    protected id_: string;
+    protected key_: any;
+    protected keyInCollection_: T;
+    protected getKeyInCollection_: (() => T) | null;
+    protected collection_: ListType<any> | null;
+    protected getCollection_: (() => ListType<any> | null) | null;
+    protected propKeys_: Array<string>;
+    protected proxy_: object | null;
+    protected proxyAccessHandler_: EachDirectiveProxyAccessHandler | null;
+    protected cloneElement_: HTMLElement | null;
+    protected cancelTransition_: (() => void) | null;
     constructor({ componentId, contextElement, keyInCollection, collection, initInfo, key, keyName, valueName }: IEachDirectiveEntryOptions<T>);
     /**
      * @description Updates the entry. This method is refactored to handle key changes and to
@@ -54,7 +54,7 @@ export declare class EachDirectiveEntry<T extends string | number> {
      * @param getNewKey A function to re-evaluate the key expression.
      * @param relativeEl The element to insert the clone before for correct DOM positioning.
      */
-    Update(collection: ListType<any>, keyInCollection: T, initInfo: IControlInitInfo, getNewKey: () => any, relativeEl: HTMLElement | null): void;
+    Update(collection: ListType<any>, keyInCollection: T, initInfo: IControlInitInfo, getNewKey: () => any): void;
     Destroy(): void;
     GetKey(): any;
     GetCloneElement(): HTMLElement | null;

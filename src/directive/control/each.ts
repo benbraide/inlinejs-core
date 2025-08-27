@@ -16,6 +16,7 @@ import {
     IProxyAccessHandler,
     IDirectiveHandlerParams,
     BuildProxyOptions,
+    GetTarget,
 } from "@benbraide/inlinejs";
 
 import { IControlInitInfo, InitControl } from "./init";
@@ -42,7 +43,7 @@ export interface IEachDirectiveEntryOptions<T extends string | number>{
 }
 
 export class EachDirectiveProxyAccessHandler implements IProxyAccessHandler{
-    public constructor(private options_: EachDirectiveProxyAccessHandlerOptions){}
+    public constructor(protected options_: EachDirectiveProxyAccessHandlerOptions){}
     
     public Get(key: string | number, target: object) {
         if (key === '$each'){
@@ -74,7 +75,7 @@ export class EachDirectiveProxyAccessHandler implements IProxyAccessHandler{
 }
 
 export class InplaceEachDirectiveProxyAccessHandler implements IProxyAccessHandler{
-    private getter_: (key: string | number) => any;
+    protected getter_: (key: string | number) => any;
     
     public constructor(getCollection: () => ListType<any>, getKeyInCollection: () => string | number, keyName?: string | null, valueName?: string | null){
         const getCount = (list: ListType<any>) => (Array.isArray(list) ? list.length : Object.keys(list).length), props = {
@@ -119,24 +120,24 @@ export function UseProxyAccessHandler(componentId: string, handler: IProxyAccess
 }
 
 export class EachDirectiveEntry<T extends string | number>{
-    private componentId_: string;
-    private contextElement_: HTMLElement | null;
+    protected componentId_: string;
+    protected contextElement_: HTMLElement | null;
     
-    private id_: string;
-    private key_: any = null;
+    protected id_: string;
+    protected key_: any = null;
 
-    private keyInCollection_: T;
-    private getKeyInCollection_: (() => T) | null;
+    protected keyInCollection_: T;
+    protected getKeyInCollection_: (() => T) | null;
 
-    private collection_: ListType<any>;
-    private getCollection_: (() => ListType<any>) | null;
+    protected collection_: ListType<any> | null;
+    protected getCollection_: (() => ListType<any> | null) | null;
     
-    private propKeys_: Array<string>;
-    private proxy_: object | null;
-    private proxyAccessHandler_: EachDirectiveProxyAccessHandler | null;
+    protected propKeys_: Array<string>;
+    protected proxy_: object | null;
+    protected proxyAccessHandler_: EachDirectiveProxyAccessHandler | null;
 
-    private cloneElement_: HTMLElement | null;
-    private cancelTransition_: (() => void) | null;
+    protected cloneElement_: HTMLElement | null;
+    protected cancelTransition_: (() => void) | null;
     
     public constructor({ componentId, contextElement, keyInCollection, collection, initInfo, key, keyName, valueName }: IEachDirectiveEntryOptions<T>){
         this.componentId_ = componentId;
@@ -168,30 +169,34 @@ export class EachDirectiveEntry<T extends string | number>{
             value: () => {
                 const collection = this.getCollection_?.();
                 const key = this.getKeyInCollection_?.();
-                return (collection && (key || key === 0) ? collection[<any>key] : undefined);
+                return collection && (key || key === 0) ? collection[<any>key] : undefined;
             },
             parent: () => parentProxy,
         };
 
         this.propKeys_ = Object.keys(props);
-        this.proxy_ = CreateInplaceProxy(BuildProxyOptions({ getter: (prop) => {
-            if (prop && props.hasOwnProperty(prop)){
-                (prop !== 'parent') && FindComponentById(componentId)?.GetBackend().changes.AddGetAccess(`${id}.${prop}`);
-                return props[prop]();
-            }
-        }, setter: (prop, value) => {
-            if (prop === 'value'){
-                const collection = this.getCollection_?.();
-                const key = this.getKeyInCollection_?.();
-                if (collection && (key || key === 0)){
-                    collection[<any>key] = value;
-                    AddChanges('set', `${this.id_}.value`, 'value', FindComponentById(this.componentId_)?.GetBackend().changes)
-                    return true;
+        this.proxy_ = CreateInplaceProxy(BuildProxyOptions({
+            getter: (prop) => {
+                if (prop && props.hasOwnProperty(prop)){
+                    (prop !== 'parent') && GetGlobal().GetCurrentProxyAccessStorage()?.Put(componentId, `${id}.${prop}`);
+                    return props[prop]();
                 }
-            }
+            },
+            setter: (prop, value) => {
+                if (prop === 'value'){
+                    const collection = this.getCollection_?.();
+                    const key = this.getKeyInCollection_?.();
+                    if (collection && (key || key === 0)){
+                        collection[<any>key] = value;
+                        AddChanges('set', `${this.id_}.value`, 'value', FindComponentById(this.componentId_)?.GetBackend().changes);
+                        return true;
+                    }
+                }
 
-            return false;
-        }, lookup: Object.keys(props), alert: { componentId, id } }));
+                return false;
+            },
+            lookup: Object.keys(props), alert: { componentId, id },
+        }));
 
         this.proxyAccessHandler_ = new EachDirectiveProxyAccessHandler({
             proxy: this.proxy_,
@@ -239,7 +244,6 @@ export class EachDirectiveEntry<T extends string | number>{
         keyInCollection: T,
         initInfo: IControlInitInfo,
         getNewKey: () => any,
-        relativeEl: HTMLElement | null
     ){
         // Step 1: Check if the element still exists in the DOM.
         if (!this.contextElement_ || !this.cloneElement_ || !document.contains(this.cloneElement_)){
@@ -258,72 +262,60 @@ export class EachDirectiveEntry<T extends string | number>{
 
         // Step 3: Update data and reposition the DOM element.
         // The DOM is now positioned correctly based on the `relativeEl` provided by the handler.
-        if (relativeEl) {
-            this.cloneElement_.parentElement?.insertBefore(this.cloneElement_, relativeEl);
-        } else {
-            // No relative element means it's the last item, so append to the parent.
-            this.cloneElement_.parentElement?.appendChild(this.cloneElement_);
-        }
+        InsertControlClone({
+            componentId: this.componentId_,
+            contextElement: this.contextElement_,
+            parent: initInfo.parent,
+            clone: this.cloneElement_,
+            relativeType: 'before',
+            relative: this.contextElement_,
+            processDirectives: false,
+        });
         
         // Step 4: Update internal state.
         this.collection_ = collection;
         this.keyInCollection_ = keyInCollection;
         
-        // Step 5: Process directives and handle transition.
-        // Instead of destroying and re-creating the element scope, we can try to simply re-process directives.
-        // This is a trade-off between performance and reliability. A full re-render on key change is safer.
-        // We've handled the key change above, so for position updates, this is acceptable.
+        // Step 5: Alert changes to proxy keys
+        const changes = FindComponentById(this.componentId_)?.GetBackend().changes;
         
-        // Remove existing attributes to avoid conflicts.
-        [...this.cloneElement_.attributes].forEach(attr => this.cloneElement_!.removeAttribute(attr.name));
-        
-        // Copy new attributes from the template blueprint.
-        initInfo.getCloneAttributes().forEach(attr => this.cloneElement_!.setAttribute(attr.name, attr.value));
-
-        // Re-process directives to update the DOM with new data.
-        ProcessDirectives({
-            component: this.componentId_,
-            element: this.cloneElement_,
-            options: {
-                checkDocument: false,
-                checkTemplate: true,
-            },
-            proxyAccessHandler: this.proxyAccessHandler_,
-        });
-
-        // The transition is cancelled and restarted to handle re-render animations.
-        this.cancelTransition_?.();
-        this.cancelTransition_ = WaitTransition({
-            componentId: this.componentId_,
-            contextElement: this.contextElement_,
-            target: this.cloneElement_,
-            callback: () => (this.cancelTransition_ = null),
-            reverse: false,
-        });
+        changes && this.propKeys_.filter(key => key !== 'parent').forEach(key => AddChanges('set', `${this.id_}.${key}`, key, changes, false));
     }
 
     public Destroy(){
         this.cancelTransition_?.();
         this.cancelTransition_ = null;
 
-        this.contextElement_ && this.cloneElement_ && WaitTransition({
-            componentId: this.componentId_,
-            contextElement: this.contextElement_,
-            target: this.cloneElement_,
-            callback: () => {
-                this.cloneElement_?.parentElement && this.cloneElement_.remove();
-                this.cloneElement_ && FindComponentById(this.componentId_)?.FindElementScope(this.cloneElement_)?.Destroy();
-                
-                this.cloneElement_ = null;
-                this.contextElement_ = null;
-                
-                this.proxyAccessHandler_ = null;
-                this.getKeyInCollection_ = null;
+        this.cloneElement_ && FindComponentById(this.componentId_)?.FindElementScope(this.cloneElement_)?.Destroy(true);// Mark for delete - prevent further reactive updates
+        
+        const cleanup = () => {
+            this.cloneElement_?.parentElement && this.cloneElement_.remove();
+            this.cloneElement_ && FindComponentById(this.componentId_)?.FindElementScope(this.cloneElement_)?.Destroy();
+            
+            this.cloneElement_ = null;
+            this.contextElement_ = null;
+            
+            this.proxyAccessHandler_ = null;
+            this.getKeyInCollection_ = null;
 
-                this.proxy_ = null;
-            },
-            reverse: true,
-        });
+            this.collection_ = null;
+            this.getCollection_ = null;
+            
+            this.proxy_ = null;
+        };
+        
+        if (this.contextElement_ && this.cloneElement_){
+            WaitTransition({
+                componentId: this.componentId_,
+                contextElement: this.contextElement_,
+                target: this.cloneElement_,
+                callback: cleanup,
+                reverse: true,
+            });
+        }
+        else{
+            cleanup();
+        }
     }
 
     public GetKey(){
@@ -351,7 +343,7 @@ export function LoopDirectiveHandler(matchedExpression: string, keyName: string,
     // We get the expression for the key, which remains constant.
     const resolvedKeyExpression = GetDirectiveValue(contextElement, 'bind:key', ':key') || null;
 
-    const generateItems = (data: ListType<any>, callback: (inserter: (item: any, index: number | string) => void, cleanup: () => void) => void) => {
+    const generateItems = (data: ListType<any>, callback: (inserter: (item: any, index: number | string, indexKey?: string) => void, cleanup: () => void) => void) => {
         let activeIndex: string | number = '';
 
         const proxyAccessHandler = resolvedKeyExpression ? new InplaceEachDirectiveProxyAccessHandler(
@@ -373,11 +365,16 @@ export function LoopDirectiveHandler(matchedExpression: string, keyName: string,
         
         // We will store entries in a temporary list for cleanup.
         const currentEntries = new Map<any, EachDirectiveEntry<number | string>>();
-        let lastClonedElement: HTMLElement | null = null;
 
-        callback((item, index) => {
+        callback((item, index, indexKey?: string) => {
             activeIndex = index;
             getCurrentKey((key) => {
+                let isNothing = GetGlobal().IsNothing(key);
+                if (isNothing && indexKey){
+                    key = indexKey;
+                    isNothing = false;
+                }
+                
                 const existingEntry = keyedItems.get(key);
                 if (!init){
                     existingEntry?.Destroy();
@@ -385,16 +382,13 @@ export function LoopDirectiveHandler(matchedExpression: string, keyName: string,
                     return;
                 }
 
-                const validKey = GetGlobal().IsNothing(key) ? index : key;
+                const validKey = isNothing ? index : key;
                 
-                if (existingEntry) {
-                    // Update the existing entry with the new data and DOM position.
-                    existingEntry.Update(data, index, init, () => key, lastClonedElement ? lastClonedElement.nextElementSibling as HTMLElement : contextElement.parentElement!.firstElementChild as HTMLElement);
+                if (existingEntry) {// Update the existing entry with the new data and DOM position.
+                    existingEntry.Update(data, index, init, () => key);
                     currentEntries.set(key, existingEntry);
-
-                    lastClonedElement = existingEntry.GetCloneElement();
-                } else {
-                    // Create a new entry and add it to the map.
+                }
+                else { // Create a new entry and add it to the map.
                     const newEntry = new EachDirectiveEntry({
                         componentId, contextElement, keyName, valueName,
                         key: validKey,
@@ -406,8 +400,6 @@ export function LoopDirectiveHandler(matchedExpression: string, keyName: string,
                     keyedItems.has(validKey) && keyedItems.get(validKey)?.Destroy();
                     keyedItems.set(validKey, newEntry);
                     currentEntries.set(validKey, newEntry);
-
-                    lastClonedElement = newEntry.GetCloneElement();
                 }
             });
         }, () => { // Cleanup function.
@@ -427,7 +419,7 @@ export function LoopDirectiveHandler(matchedExpression: string, keyName: string,
     });
 
     const generateMapItems = (data: Record<string, any>) => generateItems(data, (inserter, cleanup) => {
-        Object.entries(data).forEach(([key, value]) => inserter(value, key));
+        Object.entries(data).forEach(([key, value]) => inserter(value, key, key));
         cleanup();
     });
 
@@ -439,31 +431,31 @@ export function LoopDirectiveHandler(matchedExpression: string, keyName: string,
 
     let firstEntry = true;
     init.effect((value) => {
-        let checkpoint = ++init!.checkpoint, component = (firstEntry ? FindComponentById(componentId) : null);
+        const checkpoint = ++init!.checkpoint, component = (firstEntry ? FindComponentById(componentId) : null);
         
-        component?.GetBackend().changes.PushGetAccessStorageSnapshot();//Prevent adding 'get access' entries
-        StreamData(value, (value) => {
-            if (checkpoint != init?.checkpoint){
-                return;
-            }
+        GetGlobal().SuspendProxyAccessStorage(() => {
+            StreamData(value, (value) => {
+                if (checkpoint != init?.checkpoint){
+                    return;
+                }
 
-            JournalTry(() => {
-                if (Array.isArray(value)){
-                    generateArrayItems(value);
-                }
-                else if (typeof value === 'number'){
-                    generateArrayItems((value < 0) ? Array.from(Array(-value).keys()).map(item => -(item + 1)) : Array.from(Array(value).keys()));
-                }
-                else if (typeof value === 'string'){
-                    generateArrayItems(value.split(''));
-                }
-                else if (IsObject(value)){
-                    generateMapItems(value);
-                }
-            }), 'InlineJS.EachDirectiveHandler.Effect', contextElement;
+                JournalTry(() => {
+                    if (Array.isArray(value)){
+                        generateArrayItems(value);
+                    }
+                    else if (typeof value === 'number'){
+                        generateArrayItems((value < 0) ? Array.from(Array(-value).keys()).map(item => -(item + 1)) : Array.from(Array(value).keys()));
+                    }
+                    else if (typeof value === 'string'){
+                        generateArrayItems(value.split(''));
+                    }
+                    else if (IsObject(value)){
+                        generateMapItems(value);
+                    }
+                }), 'InlineJS.EachDirectiveHandler.Effect', contextElement;
+            });
         });
-
-        component?.GetBackend().changes.PopGetAccessStorageSnapshot(false);
+        
         firstEntry = false;
     });
 }

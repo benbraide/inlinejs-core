@@ -79,19 +79,19 @@ export const ModelDirectiveHandler = CreateDirectiveHandlerCallback('model', ({ 
             return;
         }
 
-        if (contextElement instanceof HTMLInputElement || contextElement instanceof HTMLTextAreaElement){
-            contextElement.value = ToString(value);
-        }
-        else if (isRadio){
-            (contextElement as HTMLInputElement).checked = IsEqual(transformData(value), transformData((contextElement as HTMLInputElement).value));
+        if (isRadio){
+            contextElement.checked = IsEqual(transformData(value), transformData(contextElement.value));
         }
         else if (isCheckable){
             if (Array.isArray(value)){//Add value to array
-                (contextElement as HTMLInputElement).checked = value.includes(transformData((contextElement as HTMLInputElement).value));
+                contextElement.checked = value.includes(transformData(contextElement.value));
             }
             else{
-                (contextElement as HTMLInputElement).checked = !!value;
+                contextElement.checked = !!value;
             }
+        }
+        else if (contextElement instanceof HTMLInputElement || contextElement instanceof HTMLTextAreaElement){
+            contextElement.value = ToString(value);
         }
         else if (contextElement instanceof HTMLSelectElement && contextElement.multiple){//Retrieve all selected
             if (Array.isArray(value)){//Value must be an array

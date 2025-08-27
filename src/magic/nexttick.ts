@@ -17,7 +17,6 @@ export function AddNextTickHandler({ componentId, contextElement }: IMagicHandle
         const component = FindComponentById(componentId), { context = null, changes = null } = (component?.GetBackend() || {});
 
         context?.Push(ContextKeys.self, contextElement);
-        changes?.ResetLastAccessContext();
 
         PushCurrentComponent(componentId);
         Object.entries(contexts || {}).forEach(([key, value]) => context?.Push(key, value));

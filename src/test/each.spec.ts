@@ -184,8 +184,6 @@ describe('hx-each directive', () => {
         TextDirectiveHandlerCompact();
         OnDirectiveHandlerCompact();
 
-        debugger;
-
         BootstrapAndAttach();
     
         expect(document.querySelectorAll('p').length).equal(1);

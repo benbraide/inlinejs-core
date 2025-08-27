@@ -11,7 +11,6 @@ import { TextDirectiveHandlerCompact } from '../directive/flow/text';
 import { ComponentDirectiveHandlerCompact } from '../directive/data/component';
 import { ComponentMagicHandlerCompact } from '../magic/data/component';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
-import { UnoptimizedMagicHandlerCompact } from '../magic/reactive/unoptimized';
 
 describe('component', () => {
     it('can be initialized with the \'hx-component\' directive', () => {
@@ -184,39 +183,6 @@ describe('component', () => {
         await waitFor(() => { expect(document.querySelectorAll('span')[1].textContent).equal('unoptimized') });
     });
 
-    it('should obey \'$unoptimized\' global magic property when accessing data from other components', async () => {
-        let key = RandomString(18);
-        document.body.innerHTML = `
-            <div hx-data="{ nested: {foo: 'bar'} }" hx-component="${key}">
-                <span hx-text="nested.foo"></span>
-                <button hx-on:click="nested = {foo: 'unoptimized'}"></button>
-            </div>
-            <div hx-data>
-                <span hx-text="$unoptimized($component('${key}').nested.foo)"></span>
-            </div>
-        `;
-    
-        CreateGlobal();
-
-        DataDirectiveHandlerCompact();
-        ComponentDirectiveHandlerCompact();
-        TextDirectiveHandlerCompact();
-        OnDirectiveHandlerCompact();
-
-        ComponentMagicHandlerCompact();
-        UnoptimizedMagicHandlerCompact();
-
-        BootstrapAndAttach();
-    
-        expect(document.querySelectorAll('span')[0].textContent).equal('bar');
-        expect(document.querySelectorAll('span')[1].textContent).equal('bar');
-
-        userEvent.click(document.querySelector('button')!);
-
-        await waitFor(() => { expect(document.querySelectorAll('span')[0].textContent).equal('bar') });
-        await waitFor(() => { expect(document.querySelectorAll('span')[1].textContent).equal('unoptimized') });
-    });
-
     it('should not be affected by optimized settings in other components', async () => {
         let key = RandomString(18);
         document.body.innerHTML = `
@@ -246,6 +212,6 @@ describe('component', () => {
         userEvent.click(document.querySelector('button')!);
 
         await waitFor(() => { expect(document.querySelectorAll('span')[0].textContent).equal('unoptimized') });
-        await waitFor(() => { expect(document.querySelectorAll('span')[1].textContent).equal('bar') });
+        await waitFor(() => { expect(document.querySelectorAll('span')[1].textContent).equal('unoptimized') });
     });
 });

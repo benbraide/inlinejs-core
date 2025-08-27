@@ -10,6 +10,7 @@ export const HtmlDirectiveHandler = CreateDirectiveHandlerCallback('html', ({ co
             noinsertfalse: false,
             noinsertnull: false,
             noinsertundefined: false,
+            sanitize: false,
         },
         list: argOptions,
     });
@@ -33,6 +34,7 @@ export const HtmlDirectiveHandler = CreateDirectiveHandlerCallback('html', ({ co
                     component: componentId,
                     processDirectives: true,
                     useTransition: true,
+                    sanitize: options.sanitize,
                     beforeRemove: noRemoveList.length == 0 ? undefined : beforeTransition => beforeTransition && noRemoveList.includes(value) ? false : undefined,
                     beforeInsert: noInsertList.length == 0 ? undefined : () => noInsertList.includes(value) ? false : undefined,
                 }));

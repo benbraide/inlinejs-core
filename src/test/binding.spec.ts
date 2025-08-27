@@ -10,7 +10,6 @@ import { DataDirectiveHandlerCompact } from '../directive/data/data';
 import { TextDirectiveHandlerCompact } from '../directive/flow/text';
 import { OnDirectiveHandlerCompact } from '../directive/flow/on';
 
-import { UnoptimizedMagicHandlerCompact } from '../magic/reactive/unoptimized';
 import { StaticMagicHandlerCompact } from '../magic/reactive/static';
 import { EffectDirectiveHandlerCompact } from '../directive/reactive/effect';
 import { StaticDirectiveHandlerCompact } from '../directive/reactive/static';
@@ -171,34 +170,6 @@ describe('data binding', () => {
 
         await waitFor(() => { expect(document.querySelectorAll('span')[0].textContent).equal('baz') });
         await waitFor(() => { expect(document.querySelectorAll('span')[1].textContent).equal('{"foo":"unoptimized"}') });
-    });
-
-    it('should obey \'$unoptimized\' global magic property', async () => {
-        document.body.innerHTML = `
-            <div hx-data="{ nested: {foo: 'bar'}, $config: {reactiveState: 'optimized'} }">
-                <span hx-text="nested.foo"></span>
-                <span hx-text="$unoptimized(nested.foo)"></span>
-                <button hx-on:click="nested = {foo: 'unoptimized'}"></button>
-            </div>
-        `;
-    
-        CreateGlobal();
-
-        DataDirectiveHandlerCompact();
-        TextDirectiveHandlerCompact();
-        OnDirectiveHandlerCompact();
-
-        UnoptimizedMagicHandlerCompact();
-        
-        BootstrapAndAttach();
-    
-        expect(document.querySelectorAll('span')[0].textContent).equal('bar');
-        expect(document.querySelectorAll('span')[1].textContent).equal('bar');
-
-        userEvent.click(document.querySelector('button')!);
-
-        await waitFor(() => { expect(document.querySelectorAll('span')[0].textContent).equal('bar') });
-        await waitFor(() => { expect(document.querySelectorAll('span')[1].textContent).equal('unoptimized') });
     });
 
     it('should obey \'$static\' global magic property', async () => {

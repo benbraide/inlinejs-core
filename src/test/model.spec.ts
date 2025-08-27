@@ -202,8 +202,10 @@ describe('hx-model directive', () => {
         ModelDirectiveHandlerCompact();
         TextDirectiveHandlerCompact();
 
+        debugger;
+        
         BootstrapAndAttach();
-    
+        
         expect(document.querySelector('input')!.checked).equal(true);
         expect(document.querySelector('span')!.textContent).equal('true');
 

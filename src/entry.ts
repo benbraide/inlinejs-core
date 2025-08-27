@@ -48,7 +48,6 @@ import { StoreMagicHandlerCompact } from './magic/data/store';
 import { ResourceMagicHandlerCompact } from './magic/data/resource';
 
 import { StaticMagicHandlerCompact } from './magic/reactive/static';
-import { UnoptimizedMagicHandlerCompact } from './magic/reactive/unoptimized';
 import { WatchMagicHandlerCompact } from './magic/reactive/watch';
 
 import { ArithmeticMagicHandlerCompact } from './magic/operations/arithmetic';
@@ -69,6 +68,7 @@ import { CodeMagicHandlerCompact } from './magic/code';
 import { InlineJSMagicHandlerCompact } from './magic/inline';
 import { WaitingMagicHandlerCompact } from './magic/waiting';
 import { WrapMagicHandlerCompact } from './magic/wrap';
+import { RangeMagicHandlerCompact } from './magic/range';
 
 export function InlineJSCore(){
     WaitForGlobal().then(() => {
@@ -120,7 +120,6 @@ export function InlineJSCore(){
         ResourceMagicHandlerCompact();
 
         StaticMagicHandlerCompact();
-        UnoptimizedMagicHandlerCompact();
         WatchMagicHandlerCompact();
 
         ArithmeticMagicHandlerCompact();
@@ -141,5 +140,6 @@ export function InlineJSCore(){
         InlineJSMagicHandlerCompact();
         WaitingMagicHandlerCompact();
         WrapMagicHandlerCompact();
+        RangeMagicHandlerCompact();
     });
 }

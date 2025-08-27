@@ -1,11 +1,14 @@
-import { FindComponentById, AddMagicHandler, CreateMagicHandlerCallback } from "@benbraide/inlinejs";
+import { AddMagicHandler, CreateMagicHandlerCallback, IProxyAccessStorage, GetGlobal } from "@benbraide/inlinejs";
 
-export const StaticMagicHandler = CreateMagicHandlerCallback('static', ({ componentId }) => {
+let storage_: IProxyAccessStorage | null = null;
+
+export const StaticMagicHandler = CreateMagicHandlerCallback('static', () => {
     return (value: any) => {
-        FindComponentById(componentId)?.GetBackend().changes.PopGetAccessStorageSnapshot(false);
+        GetGlobal().SetCurrentProxyAccessStorage(storage_);
+        storage_ = null;
         return value;
     }
-}, ({ componentId, component }) => (component || FindComponentById(componentId))?.GetBackend().changes.PushGetAccessStorageSnapshot());
+}, () => (storage_ = GetGlobal().SetCurrentProxyAccessStorage(null)));
 
 export function StaticMagicHandlerCompact(){
     AddMagicHandler(StaticMagicHandler);
