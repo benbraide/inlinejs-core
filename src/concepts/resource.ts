@@ -1,4 +1,4 @@
-import { GetGlobal, JournalTry, IResourceConcept, IResourceGetParams, IResourceOptions, PathToRelative, TidyPath } from "@benbraide/inlinejs";
+import { GetGlobal, JournalTry, IResourceConcept, IResourceGetParams, IResourceOptions, PathToRelative, TidyPath, IsObject } from "@benbraide/inlinejs";
 
 interface IResourceInfo{
     callbacks: Array<() => void> | null;
@@ -45,9 +45,12 @@ export class ResourceConcept implements IResourceConcept{
     private Get_(info: IResourceOptions | Array<IResourceOptions>, concurrent: boolean){
         return new Promise<any>((resolve, reject) => {
             let getOne = (info: IResourceOptions) => {
+                if (!IsObject(info.additionalAttributes)){
+                    info.additionalAttributes = {};
+                }
+                
                 if (info.type === 'link'){
-                    info.additionalAttributes = (info.additionalAttributes || {});
-                    info.additionalAttributes['rel'] = 'stylesheet';
+                    info.additionalAttributes && (info.additionalAttributes['rel'] = 'stylesheet');
                 }
                 
                 let path = PathToRelative(info.path, this.origin_);
@@ -94,7 +97,10 @@ export class ResourceConcept implements IResourceConcept{
                             setData(false);
                         });
     
-                        Object.entries(info.additionalAttributes || {}).forEach(([key, value]) => resource.setAttribute(key, value));
+                        if (IsObject(info.additionalAttributes)){
+                            Object.entries(info.additionalAttributes || {}).forEach(([key, value]) => resource.setAttribute(key, value));
+                        }
+
                         resource.setAttribute(info.attribute, path);
                         
                         ((info.target && document.querySelector(info.target)) || document.body).append(resource);
