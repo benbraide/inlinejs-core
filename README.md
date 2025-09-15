@@ -51,6 +51,9 @@ Available **core** directives:
 | [`hx-cloak`](#hx-cloak) | This attribute is removed when InlineJS initializes. Useful for hiding pre-initialized DOM. |
 | [`hx-code`](#hx-code) | Evaluates the text inside the element as a JS expression. |
 | [`hx-log`](#hx-log) | Logs the element it is placed in to the console. |
+| [`hx-next.tick`](#hx-nexttick) | Execute expression after InlineJS has made its reactive DOM updates. |
+| [`hx-next.idle`](#hx-nextidle) | Execute expression when the system becomes idle. |
+| [`hx-next.non.idle`](#hx-nextnonIdle) | Execute expression when the system is no longer idle. |
 
 Available **core** magic properties:
 
@@ -68,6 +71,12 @@ Available **core** magic properties:
 | [`$static`](#static) | Suppress reactivity for the specified access. |
 | [`$unoptimized`](#unoptimized) | Suppress optimizations for the specified access. |
 | [`$watch`](#watch) | Watch a given expression for changes. |
+| [`$store`](#store) | Store objects in global or component-local storage. |
+| [`$resource`](#resource) | Load external resources (styles, scripts, data). |
+| [`$waiting`](#waiting) | Check if promises or loops are still pending. |
+| [`$wrap`](#wrap) | Wrap functions to maintain proper scope context. |
+| [`$range`](#range) | Create numeric ranges with optional timing. |
+| [`$attribute`](#attribute) | Manipulate DOM element attributes. |
 | [`$pick`](#pick) | Return one of two values based on a predicate. |
 | [`$rel`](#rel) | Use one of the `relational` operators. |
 | [`$log`](#log) | Use one of the `logical` operators. |
@@ -194,6 +203,15 @@ Use the `evaluate` argument to instruct the directive to evaluate the specified 
 **Structure:** `<div hx-post="[expression]"></div>`
 
 `hx-post` runs an expression after all directives on element, and offspring directives, have been executed.
+
+---
+
+### `hx-init`
+**Example:** `<div hx-init="console.log('Element initialized')"></div>`
+
+**Structure:** `<div hx-init="[expression]"></div>`
+
+`hx-init` runs an expression once when an element is added to the DOM. This is useful for initialization logic that should run only once when the element becomes available.
 
 ---
 
@@ -578,6 +596,473 @@ Negative values can be specified. Example:
 <style>
     [hx-cloak] { display: none; }
 </style>
+```
+
+---
+
+### `hx-next.tick`
+**Example:** `<div hx-next.tick="console.log('DOM updated')"></div>`
+
+**Structure:** `<div hx-next.tick="[expression]"></div>`
+
+`hx-next.tick` executes an expression after InlineJS has made its reactive DOM updates. This is useful for running code that needs to access updated DOM elements or perform actions after reactive changes have been applied.
+
+---
+
+### `hx-next.idle`
+**Example:** `<div hx-next.idle="performBackgroundTask()"></div>`
+
+**Structure:** `<div hx-next.idle="[expression]"></div>`
+
+`hx-next.idle` executes an expression when the system becomes idle. This is useful for performing non-critical background tasks that should only run when the browser is not busy with other operations.
+
+---
+
+### `hx-next.non.idle`
+**Example:** `<div hx-next.non.idle="pauseBackgroundTask()"></div>`
+
+**Structure:** `<div hx-next.non.idle="[expression]"></div>`
+
+`hx-next.non.idle` executes an expression when the system is no longer idle. This is useful for pausing background tasks or performing actions when the browser becomes busy again.
+
+---
+
+## Magic Properties
+
+---
+
+### `$store`
+**Example:** `<div hx-data="{ id: $store(myObject) }"></div>`
+
+`$store` stores objects in global or component-local storage and returns a unique identifier. This is useful for persisting data across component instances or sharing data globally.
+
+**Parameters:**
+- `value`: The object to store
+- `useLocal` (optional): If true, stores in component-local storage instead of global storage
+
+**Example with local storage:**
+```html
+<div hx-data="{ localId: $store(myData, true) }"></div>
+```
+
+---
+
+### `$resource`
+**Example:** `<div hx-data="{ styles: $resource.getStyle('path/to/style.css') }"></div>`
+
+`$resource` provides methods to load external resources like stylesheets, scripts, and data files.
+
+**Available methods:**
+- `get(params)`: Generic resource getter with configuration parameters
+- `getStyle(path, concurrent?, attributes?)`: Load CSS stylesheets
+- `getScript(path, concurrent?, attributes?)`: Load JavaScript files  
+- `getData(path, concurrent?, json?)`: Load data files
+
+**Parameters:**
+- `path`: String or array of resource paths
+- `concurrent` (optional): Whether to load resources concurrently
+- `attributes` (optional): Additional HTML attributes for the resource element
+- `json` (optional): Whether to parse response as JSON
+
+**Examples:**
+```html
+<!-- Load a stylesheet -->
+<div hx-init="$resource.getStyle('theme.css')"></div>
+
+<!-- Load multiple scripts -->
+<div hx-init="$resource.getScript(['lib1.js', 'lib2.js'], true)"></div>
+
+<!-- Load JSON data -->
+<div hx-data="{ data: $resource.getData('api/data.json', false, true) }"></div>
+```
+
+---
+
+### `$waiting` 
+**Example:** `<div hx-show="$waiting(myPromise)"></div>`
+
+`$waiting` checks if promises or loops are still pending/running. Returns a boolean or promise that resolves to false when the operation completes.
+
+**Supported types:**
+- `Promise`: Returns a promise that resolves to false when the input promise completes
+- `Loop`: Returns a promise that resolves to false when the loop finishes
+- Other values: Returns false immediately
+
+**Example:**
+```html
+<div hx-data="{ loading: false, result: null }">
+    <button hx-on:click="loading = fetch('/api/data').then(r => result = r)">Load</button>
+    <div hx-show="$waiting(loading)">Loading...</div>
+    <div hx-show="!$waiting(loading) && result">{{ result }}</div>
+</div>
+```
+
+---
+
+### `$wrap`
+**Example:** `<div hx-data="{ wrapped: $wrap(myFunction) }"></div>`
+
+`$wrap` wraps functions to maintain proper scope context when called. This ensures that functions execute within the correct component scope.
+
+**Example:**
+```html
+<div hx-data="{ 
+    count: 0,
+    increment() { this.count++ },
+    wrappedIncrement: $wrap(function() { this.count++ })
+}">
+    <button hx-on:click="wrappedIncrement()">Increment</button>
+    <span hx-text="count"></span>
+</div>
+```
+
+---
+
+### `$range`
+**Example:** `<div hx-data="{ numbers: $range(1, 10) }"></div>`
+
+`$range` creates numeric ranges, optionally with timing for animations.
+
+**Parameters:**
+- `from`: Starting value
+- `to`: Ending value  
+- `duration` (optional): Animation duration in milliseconds (default: 0)
+- `delay` (optional): Animation delay in milliseconds (default: 0)
+
+**Examples:**
+```html
+<!-- Simple range -->
+<template hx-each="$range(1, 5) as num">
+    <div hx-text="num"></div>
+</template>
+
+<!-- Timed range for animations -->
+<div hx-data="{ progress: $range(0, 100, 2000) }">
+    <div hx-style:width="progress + '%'"></div>
+</div>
+```
+
+---
+
+### `$attribute`
+**Example:** `<div hx-init="$attribute.set('data-id', '123')"></div>`
+
+`$attribute` provides methods to manipulate DOM element attributes on the current element.
+
+**Available methods:**
+- `set(key, value)`: Set an attribute value
+- `unset(...keys)`: Remove one or more attributes
+- `get(key)`: Get an attribute value (or array for multiple keys)
+- `toggle(predicate, key, trueValue, falseValue?)`: Set attribute based on condition
+- `contains(...keys)`: Check if all specified attributes exist
+
+**Examples:**
+```html
+<div hx-data="{ active: false }">
+    <!-- Set/unset attributes -->
+    <button hx-on:click="$attribute.toggle(active, 'aria-pressed', 'true', 'false'); active = !active">
+        Toggle
+    </button>
+    
+    <!-- Get attribute values -->
+    <div hx-text="$attribute.get('id')"></div>
+    
+    <!-- Multiple operations -->
+    <div hx-init="$attribute.set('role', 'button').set('tabindex', '0')"></div>
+</div>
+```
+
+---
+
+### `$component`
+**Example:** `<div hx-text="$component('main').data.message"></div>`
+
+`$component` retrieves the storage/data of a specified component by its name or key.
+
+**Parameters:**
+- `name` (optional): The component name/key. If not provided, returns the current component's storage.
+
+**Example:**
+```html
+<div hx-data="{ message: 'Hello' }" hx-component="main">
+    <div hx-text="$component('main').data.message"></div>
+    <div hx-text="$component().data.message"></div> <!-- Same as above -->
+</div>
+```
+
+---
+
+### `$locals`
+**Example:** `<div hx-text="$locals.tempData"></div>`
+
+`$locals` retrieves the local storage associated with the current element. Local storage is not reactive and is scoped to the element and its descendants.
+
+**Example:**
+```html
+<div hx-locals="{ tempData: 'temporary' }">
+    <span hx-text="$locals.tempData"></span>
+</div>
+```
+
+---
+
+### `$proxy`
+**Example:** `<div hx-text="$proxy.rootData"></div>`
+
+`$proxy` retrieves the root proxy object that contains the component's reactive data.
+
+---
+
+### `$native`
+**Example:** `<div hx-text="$native('myArray').length"></div>`
+
+`$native` retrieves the non-proxied (native) data associated with a key, bypassing reactivity.
+
+**Parameters:**
+- `key`: The data key to retrieve in native form
+
+**Example:**
+```html
+<div hx-data="{ items: [1, 2, 3] }">
+    <div hx-text="$native('items').push(4)"></div> <!-- Direct array manipulation -->
+</div>
+```
+
+---
+
+### `$refs`
+**Example:** `<div hx-on:click="$refs.myButton.focus()"></div>`
+
+`$refs` retrieves DOM elements marked with `hx-ref` inside the component.
+
+**Example:**
+```html
+<div hx-data="{}">
+    <input hx-ref="myInput" type="text">
+    <button hx-on:click="$refs.myInput.focus()">Focus Input</button>
+</div>
+```
+
+---
+
+### `$scope`
+**Example:** `<div hx-text="$scope.level"></div>`
+
+`$scope` retrieves the current scope's data. In nested scopes, this returns the immediate scope's data.
+
+**Example:**
+```html
+<div hx-data="{ level: 'top' }">
+    <div hx-data="{ level: 'nested' }">
+        <p hx-text="$scope.level"></p> <!-- Shows 'nested' -->
+    </div>
+</div>
+```
+
+---
+
+### `$scopes`
+**Example:** `<div hx-text="$scopes.length"></div>`
+
+`$scopes` retrieves all scopes in the current component as an array, from innermost to outermost.
+
+---
+
+### `$stream`
+**Example:** `<div hx-init="$stream(data, value => console.log(value))"></div>`
+
+`$stream` streams the specified data using a callback, useful for handling asynchronous data flows.
+
+**Parameters:**
+- `data`: The data to stream
+- `callback`: Function to call with each streamed value
+
+---
+
+### `$wait`
+**Example:** `<div hx-show="!$wait(myPromise)"></div>`
+
+`$wait` waits for the specified data using a callback, typically used with promises or asynchronous operations.
+
+**Note:** This is different from `$waiting` which checks pending status.
+
+---
+
+### `$static`
+**Example:** `<div hx-text="$static(expensiveComputation())"></div>`
+
+`$static` suppresses reactivity for the specified access, preventing the expression from being re-evaluated when dependencies change.
+
+**Example:**
+```html
+<div hx-data="{ count: 0, timestamp: Date.now() }">
+    <div hx-text="$static(timestamp)"></div> <!-- Won't update when count changes -->
+    <button hx-on:click="count++">{{ count }}</button>
+</div>
+```
+
+---
+
+### `$unoptimized`
+**Example:** `<div hx-text="$unoptimized(dynamicExpression)"></div>`
+
+`$unoptimized` suppresses optimizations for the specified access, forcing full evaluation each time.
+
+---
+
+### `$watch`
+**Example:** `<div hx-init="$watch('count', value => console.log('Count:', value))"></div>`
+
+`$watch` watches a given expression for changes and executes a callback when changes occur.
+
+**Parameters:**
+- `expression`: The expression to watch (string or function)
+- `callback`: Function to call when the expression changes
+
+**Example:**
+```html
+<div hx-data="{ count: 0 }" hx-init="$watch('count', value => console.log('New count:', value))">
+    <button hx-on:click="count++">{{ count }}</button>
+</div>
+```
+
+---
+
+### `$pick`
+**Example:** `<div hx-text="$pick(condition, 'Yes', 'No')"></div>`
+
+`$pick` returns one of two values based on a predicate (ternary operator alternative).
+
+**Parameters:**
+- `predicate`: Boolean condition
+- `trueValue`: Value to return if predicate is true
+- `falseValue`: Value to return if predicate is false
+
+**Example:**
+```html
+<div hx-data="{ isLoggedIn: false }">
+    <span hx-text="$pick(isLoggedIn, 'Welcome back!', 'Please log in')"></span>
+</div>
+```
+
+---
+
+### `$rel`
+**Example:** `<div hx-show="$rel(age, '>=', 18)"></div>`
+
+`$rel` provides access to relational operators for comparisons.
+
+**Available operators:** `>`, `<`, `>=`, `<=`, `==`, `===`, `!=`, `!==`
+
+**Example:**
+```html
+<div hx-data="{ age: 25 }">
+    <div hx-show="$rel(age, '>=', 18)">Adult content</div>
+    <div hx-show="$rel(age, '<', 13)">Child content</div>
+</div>
+```
+
+---
+
+### `$log`
+**Example:** `<div hx-show="$log(condition1, '&&', condition2)"></div>`
+
+`$log` provides access to logical operators.
+
+**Available operators:** `&&`, `||`, `!`
+
+**Example:**
+```html
+<div hx-data="{ user: { isActive: true, isPremium: false } }">
+    <div hx-show="$log(user.isActive, '&&', user.isPremium)">Premium features</div>
+    <div hx-show="$log('!', user.isActive)">Account disabled</div>
+</div>
+```
+
+---
+
+### `$math`
+**Example:** `<div hx-text="$math(price, '*', quantity)"></div>`
+
+`$math` provides access to arithmetic operators.
+
+**Available operators:** `+`, `-`, `*`, `/`, `%`, `**`
+
+**Example:**
+```html
+<div hx-data="{ price: 10, quantity: 3 }">
+    <div hx-text="'Total: $' + $math(price, '*', quantity)"></div>
+    <div hx-text="'Tax: $' + $math($math(price, '*', quantity), '*', 0.1)"></div>
+</div>
+```
+
+---
+
+### `$dom`
+**Example:** `<div hx-text="$dom('scrollTop')"></div>`
+
+`$dom` provides access to DOM properties of the current element.
+
+**Example:**
+```html
+<div hx-data="{}" hx-text="'Width: ' + $dom('offsetWidth') + 'px'"></div>
+```
+
+---
+
+### `$class`
+**Example:** `<div hx-init="$class.add('active')"></div>`
+
+`$class` provides helpers for manipulating CSS classes on the current element.
+
+**Available methods:**
+- `add(...classes)`: Add classes
+- `remove(...classes)`: Remove classes
+- `toggle(class, force?)`: Toggle a class
+- `contains(class)`: Check if class exists
+
+**Example:**
+```html
+<div hx-data="{ active: false }">
+    <button hx-on:click="$class.toggle('active'); active = !active">
+        Toggle Active
+    </button>
+</div>
+```
+
+---
+
+### `$eval`
+**Example:** `<div hx-text="$eval('2 + 2')"></div>`
+
+`$eval` evaluates an expression string and returns the result.
+
+**Example:**
+```html
+<div hx-data="{ expression: '5 * 3' }">
+    <div hx-text="'Result: ' + $eval(expression)"></div>
+</div>
+```
+
+---
+
+### `$nextTick`
+**Example:** `<div hx-init="$nextTick(() => console.log('DOM updated'))"></div>`
+
+`$nextTick` executes a given expression **after** InlineJS has made its reactive DOM updates.
+
+**Example:**
+```html
+<div hx-data="{ items: [] }">
+    <button hx-on:click="items.push('new'); $nextTick(() => $refs.list.scrollTop = $refs.list.scrollHeight)">
+        Add Item
+    </button>
+    <ul hx-ref="list">
+        <template hx-each="items as item">
+            <li hx-text="item"></li>
+        </template>
+    </ul>
+</div>
 ```
 
 ## Security
