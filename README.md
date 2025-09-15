@@ -77,6 +77,15 @@ Available **core** magic properties:
 | [`$wrap`](#wrap) | Wrap functions to maintain proper scope context. |
 | [`$range`](#range) | Create numeric ranges with optional timing. |
 | [`$attribute`](#attribute) | Manipulate DOM element attributes. |
+| [`$style`](#style) | Manipulate CSS styles on the current element. |
+| [`$code`](#code) | Execute or retrieve named code blocks. |
+| [`$inlinejs`](#inlinejs) | Access the global InlineJS framework object. |
+| [`$global`](#global) | Access the global InlineJS configuration. |
+| [`$utilities`](#utilities) | Access InlineJS utility functions. |
+| [`$values`](#values) | Access InlineJS value helpers. |
+| [`$version`](#version) | Get the InlineJS framework version. |
+| [`$str`](#str) | String manipulation utilities. |
+| [`$framework`](#framework) | Access framework-specific information. |
 | [`$pick`](#pick) | Return one of two values based on a predicate. |
 | [`$rel`](#rel) | Use one of the `relational` operators. |
 | [`$log`](#log) | Use one of the `logical` operators. |
@@ -1064,6 +1073,134 @@ Negative values can be specified. Example:
     </ul>
 </div>
 ```
+
+---
+
+### `$style`
+**Example:** `<div hx-init="$style.set('color', 'red')"></div>`
+
+`$style` provides methods to manipulate CSS styles on the current element.
+
+**Available methods:**
+- `set(key, value)`: Set a style property
+- `unset(...keys)`: Remove one or more style properties
+- `get(key)`: Get a style property value (or array for multiple keys)
+- `toggle(predicate, key, trueValue, falseValue?)`: Set style based on condition
+
+**Examples:**
+```html
+<div hx-data="{ isActive: false }">
+    <!-- Set/unset styles -->
+    <button hx-on:click="$style.toggle(isActive, 'backgroundColor', 'green', 'red'); isActive = !isActive">
+        Toggle Style
+    </button>
+    
+    <!-- Get style values -->
+    <div hx-text="'Current color: ' + $style.get('color')"></div>
+    
+    <!-- Multiple operations -->
+    <div hx-init="$style.set('padding', '10px').set('margin', '5px')"></div>
+</div>
+```
+
+---
+
+### `$code`
+**Example:** `<div hx-init="$code('myBlock')"></div>`
+
+`$code` allows execution or retrieval of named code blocks defined elsewhere.
+
+**Parameters:**
+- `name`: The name of the code block
+- `execute` (optional): Whether to execute the code (default: true)
+- `callback` (optional): Callback function to handle the result
+
+**Examples:**
+```html
+<!-- Define a code block -->
+<hx-code name="myBlock">
+    console.log('Hello from code block');
+    return 'executed';
+</hx-code>
+
+<!-- Execute the code block -->
+<div hx-init="$code('myBlock')"></div>
+
+<!-- Get code without executing -->
+<div hx-text="$code('myBlock', false)"></div>
+
+<!-- Execute with callback -->
+<div hx-init="$code('myBlock', true, result => console.log('Result:', result))"></div>
+```
+
+---
+
+### `$inlinejs`
+**Example:** `<div hx-text="$inlinejs ? 'InlineJS is available' : 'Not available'"></div>`
+
+`$inlinejs` provides access to the global InlineJS framework object, allowing interaction with the framework's core functionality.
+
+---
+
+### `$global`
+**Example:** `<div hx-text="$global.componentCount"></div>`
+
+`$global` provides access to the global InlineJS configuration and state information.
+
+---
+
+### `$utilities`
+**Example:** `<div hx-text="$utilities.randomString(10)"></div>`
+
+`$utilities` provides access to InlineJS utility functions for common operations.
+
+---
+
+### `$values`
+**Example:** `<div hx-text="$values.toString(123)"></div>`
+
+`$values` provides access to InlineJS value manipulation and conversion helpers.
+
+---
+
+### `$version`
+**Example:** `<div hx-text="'InlineJS version: ' + $version"></div>`
+
+`$version` returns the current version of the InlineJS framework.
+
+---
+
+### `$str`
+**Example:** `<div hx-text="$str.camelCase('hello-world')"></div>`
+
+`$str` provides string manipulation utilities.
+
+**Available methods:**
+- `convert(value)`: Convert any value to string
+- `camelCase(value, ucfirst?, separator?)`: Convert to camelCase
+- `snakeCase(value, separator?)`: Convert to snake_case
+- `random(length?)`: Generate random string (default length: 9)
+- `slug(value)`: Convert to URL-friendly slug
+
+**Examples:**
+```html
+<div hx-data="{ text: 'hello world' }">
+    <div hx-text="'Camel: ' + $str.camelCase(text)"></div>
+    <div hx-text="'Snake: ' + $str.snakeCase(text)"></div>
+    <div hx-text="'Slug: ' + $str.slug(text)"></div>
+    <div hx-text="'Random: ' + $str.random(5)"></div>
+</div>
+```
+
+---
+
+### `$framework`
+**Example:** `<div hx-text="'Framework version: ' + $framework.version"></div>`
+
+`$framework` provides access to framework-specific information and metadata.
+
+**Available properties:**
+- `version`: Get the current framework version
 
 ## Security
 If you find a security vulnerability, please send an email to [benplaeska@gmail.com]()
