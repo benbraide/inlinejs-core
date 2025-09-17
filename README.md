@@ -51,9 +51,9 @@ Available **core** directives:
 | [`hx-cloak`](#hx-cloak) | This attribute is removed when InlineJS initializes. Useful for hiding pre-initialized DOM. |
 | [`hx-code`](#hx-code) | Evaluates the text inside the element as a JS expression. |
 | [`hx-log`](#hx-log) | Logs the element it is placed in to the console. |
-| [`hx-next.tick`](#hx-nexttick) | Execute expression after InlineJS has made its reactive DOM updates. |
-| [`hx-next.idle`](#hx-nextidle) | Execute expression when the system becomes idle. |
-| [`hx-next.non.idle`](#hx-nextnonIdle) | Execute expression when the system is no longer idle. |
+| [`hx-next-tick`](#hx-nexttick) | Execute expression after InlineJS has made its reactive DOM updates. |
+| [`hx-next-idle`](#hx-nextidle) | Execute expression when the system becomes idle. |
+| [`hx-next-non-idle`](#hx-nextnonIdle) | Execute expression when the system is no longer idle. |
 
 Available **core** magic properties:
 
@@ -609,30 +609,30 @@ Negative values can be specified. Example:
 
 ---
 
-### `hx-next.tick`
-**Example:** `<div hx-next.tick="console.log('DOM updated')"></div>`
+### `hx-next-tick`
+**Example:** `<div hx-next-tick="console.log('DOM updated')"></div>`
 
-**Structure:** `<div hx-next.tick="[expression]"></div>`
+**Structure:** `<div hx-next-tick="[expression]"></div>`
 
-`hx-next.tick` executes an expression after InlineJS has made its reactive DOM updates. This is useful for running code that needs to access updated DOM elements or perform actions after reactive changes have been applied.
-
----
-
-### `hx-next.idle`
-**Example:** `<div hx-next.idle="performBackgroundTask()"></div>`
-
-**Structure:** `<div hx-next.idle="[expression]"></div>`
-
-`hx-next.idle` executes an expression when the system becomes idle. This is useful for performing non-critical background tasks that should only run when the browser is not busy with other operations.
+`hx-next-tick` executes an expression after InlineJS has made its reactive DOM updates. This is useful for running code that needs to access updated DOM elements or perform actions after reactive changes have been applied.
 
 ---
 
-### `hx-next.non.idle`
-**Example:** `<div hx-next.non.idle="pauseBackgroundTask()"></div>`
+### `hx-next-idle`
+**Example:** `<div hx-next-idle="performBackgroundTask()"></div>`
 
-**Structure:** `<div hx-next.non.idle="[expression]"></div>`
+**Structure:** `<div hx-next-idle="[expression]"></div>`
 
-`hx-next.non.idle` executes an expression when the system is no longer idle. This is useful for pausing background tasks or performing actions when the browser becomes busy again.
+`hx-next-idle` executes an expression when the system becomes idle. This is useful for performing non-critical background tasks that should only run when the browser is not busy with other operations.
+
+---
+
+### `hx-next-non-idle`
+**Example:** `<div hx-next-non-idle="pauseBackgroundTask()"></div>`
+
+**Structure:** `<div hx-next-non-idle="[expression]"></div>`
+
+`hx-next-non-idle` executes an expression when the system is no longer idle. This is useful for pausing background tasks or performing actions when the browser becomes busy again.
 
 ---
 
@@ -784,7 +784,7 @@ Negative values can be specified. Example:
 ---
 
 ### `$component`
-**Example:** `<div hx-text="$component('main').data.message"></div>`
+**Example:** `<div hx-text="$component('main').message"></div>`
 
 `$component` retrieves the storage/data of a specified component by its name or key.
 
@@ -794,8 +794,8 @@ Negative values can be specified. Example:
 **Example:**
 ```html
 <div hx-data="{ message: 'Hello' }" hx-component="main">
-    <div hx-text="$component('main').data.message"></div>
-    <div hx-text="$component().data.message"></div> <!-- Same as above -->
+    <div hx-text="$component('main').message"></div>
+    <div hx-text="$component().message"></div> <!-- Same as above -->
 </div>
 ```
 
@@ -823,7 +823,7 @@ Negative values can be specified. Example:
 ---
 
 ### `$native`
-**Example:** `<div hx-text="$native('myArray').length"></div>`
+**Example:** `<div hx-text="$native(myArray).length"></div>`
 
 `$native` retrieves the non-proxied (native) data associated with a key, bypassing reactivity.
 
@@ -833,7 +833,7 @@ Negative values can be specified. Example:
 **Example:**
 ```html
 <div hx-data="{ items: [1, 2, 3] }">
-    <div hx-text="$native('items').push(4)"></div> <!-- Direct array manipulation -->
+    <div hx-text="$native(items).push(4)"></div> <!-- Direct array manipulation -->
 </div>
 ```
 
@@ -957,17 +957,17 @@ Negative values can be specified. Example:
 ---
 
 ### `$rel`
-**Example:** `<div hx-show="$rel(age, '>=', 18)"></div>`
+**Example:** `<div hx-show="$rel.ge(age, 18)"></div>`
 
 `$rel` provides access to relational operators for comparisons.
 
-**Available operators:** `>`, `<`, `>=`, `<=`, `==`, `===`, `!=`, `!==`
+**Available functions:** `comp`, `lt`, `le`, `eq`, `eqs`, `nes`, `ne`, `ge`, `gt`
 
 **Example:**
 ```html
 <div hx-data="{ age: 25 }">
-    <div hx-show="$rel(age, '>=', 18)">Adult content</div>
-    <div hx-show="$rel(age, '<', 13)">Child content</div>
+    <div hx-show="$rel.ge(age, 18)">Adult content</div>
+    <div hx-show="$rel.lt(age, 13)">Child content</div>
 </div>
 ```
 
